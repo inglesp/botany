@@ -1,1 +1,4 @@
-tmp/
+.coverage
+db.sqlite3
+htmlcov
+tmp
