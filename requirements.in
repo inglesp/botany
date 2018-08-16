@@ -1,4 +1,6 @@
+dj-database-url
 django
+psycopg2-binary
 
 # Development
 black
