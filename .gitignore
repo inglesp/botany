@@ -1,4 +1,5 @@
 .coverage
+.hypothesis
 db.sqlite3
 htmlcov
 tmp

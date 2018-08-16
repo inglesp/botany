@@ -50,6 +50,10 @@ class Bot(AbastractBotanyModel):
     is_public = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
 
+    def __init__(self, *args, **kwargs):
+        self._score = None
+        super().__init__(*args, **kwargs)
+
     def set_public(self):
         self.is_public = True
         self.save()
@@ -63,19 +67,24 @@ class Bot(AbastractBotanyModel):
         self.is_active = True
         self.save()
 
-    @property
-    def score(self):
-        bot1_games_score = self.bot1_games.aggregate(score=models.Sum("result"))[
-            "score"
-        ]
-        bot2_games_score = self.bot2_games.aggregate(score=models.Sum("result"))[
-            "score"
-        ]
+    def get_score(self):
+        if self._score is None:
+            bot1_games_score = (
+                self.bot1_games.aggregate(score=models.Sum("score"))["score"] or 0
+            )
+            bot2_games_score = (
+                self.bot2_games.aggregate(score=models.Sum("score"))["score"] or 0
+            )
+            self._score = bot1_games_score - bot2_games_score
+        return self._score
 
-        return bot1_games_score - bot2_games_score
+    def set_score(self, score):
+        self._score = score
+
+    score = property(get_score, set_score)
 
 
 class Game(AbastractBotanyModel):
     bot1 = models.ForeignKey(Bot, related_name="bot1_games", on_delete=models.CASCADE)
     bot2 = models.ForeignKey(Bot, related_name="bot2_games", on_delete=models.CASCADE)
-    result = models.IntegerField()
+    score = models.IntegerField()

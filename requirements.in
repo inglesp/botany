@@ -3,4 +3,5 @@ django
 # Development
 black
 coverage
+hypothesis
 isort

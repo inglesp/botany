@@ -44,7 +44,7 @@ def play_game(bot1_id, bot2_id):
     pass
 
 
-def report_result(bot1_id, bot2_id, result):
+def report_result(bot1_id, bot2_id, score):
     # TODO: check whether there have been enough reported games between bots
     # TODO: store list of moves
-    Game.objects.create(bot1_id=bot1_id, bot2_id=bot2_id, result=result)
+    Game.objects.create(bot1_id=bot1_id, bot2_id=bot2_id, score=score)
