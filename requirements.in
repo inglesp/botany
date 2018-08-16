@@ -3,5 +3,6 @@ django
 # Development
 black
 coverage
+flake8
 hypothesis
 isort

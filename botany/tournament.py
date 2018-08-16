@@ -51,7 +51,7 @@ results AS (
     SELECT * FROM bot2_results
 )
 
-SELECT 
+SELECT
     b.*,
     COALESCE(SUM(num_played), 0) AS num_played,
     COALESCE(SUM(num_wins), 0) AS num_wins,
