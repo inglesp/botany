@@ -1,4 +1,44 @@
-from .models import Bot
+from django.conf import settings
+
+from .models import Bot, Game
+
+
+def unplayed_games_for_bot(bot):
+    unplayed_games = {}
+
+    if not bot.is_active:
+        return unplayed_games
+
+    for other_bot in Bot.objects.active_bots().exclude(id=bot.id):
+        num_bot1_games = bot.bot1_games.filter(bot2=other_bot).count()
+        num_bot2_games = bot.bot2_games.filter(bot1=other_bot).count()
+
+        unplayed_games[(bot.id, other_bot.id)] = (
+            settings.BOTANY_NUM_ROUNDS - num_bot1_games
+        )
+        unplayed_games[(other_bot.id, bot.id)] = (
+            settings.BOTANY_NUM_ROUNDS - num_bot2_games
+        )
+
+    unplayed_games = {ids: count for ids, count in unplayed_games.items() if count > 0}
+    return unplayed_games
+
+
+def all_unplayed_games():
+    unplayed_games = {}
+
+    for bot1 in Bot.objects.active_bots():
+        for bot2 in Bot.objects.active_bots():
+            if bot1 == bot2:
+                continue
+
+            unplayed_games[(bot1.id, bot2.id)] = settings.BOTANY_NUM_ROUNDS
+
+    for game in Game.objects.games_between_active_bots():
+        unplayed_games[(game.bot1_id, game.bot2_id)] -= 1
+
+    unplayed_games = {ids: count for ids, count in unplayed_games.items() if count > 0}
+    return unplayed_games
 
 
 def calculate_standings():

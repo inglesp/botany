@@ -1,3 +1,4 @@
+from django.test import override_settings
 from hypothesis import given
 from hypothesis.extra.django import TestCase
 
@@ -7,6 +8,7 @@ from . import factories
 from . import strategies as st
 
 
+@override_settings(BOTANY_NUM_ROUNDS=5)
 class TournamentTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -14,6 +16,8 @@ class TournamentTests(TestCase):
 
         cls.inactive_bots = [factories.create_bot(user=user) for user in users]
         cls.active_bots = [factories.create_bot(user=user) for user in users]
+        for bot in cls.inactive_bots:
+            bot.refresh_from_db()
         cls.bots = cls.active_bots + cls.inactive_bots
 
     def test_calculate_standings_with_no_games(self):
@@ -101,3 +105,78 @@ class TournamentTests(TestCase):
         ]
 
         self.assertEqual(rows, expected_rows)
+
+    @given(st.results(num_bots=6, num_games=40))
+    def test_unplayed_games_for_bot_when_bot_active(self, results):
+        bot = self.active_bots[0]
+        unplayed_games = {}
+
+        for other_bot in self.active_bots[1:]:
+            unplayed_games[(bot.id, other_bot.id)] = 5
+            unplayed_games[(other_bot.id, bot.id)] = 5
+
+        for bot1_ix, bot2_ix, score in results:
+            bot1 = self.bots[bot1_ix]
+            bot2 = self.bots[bot2_ix]
+
+            if bot1.user == bot2.user:
+                continue
+
+            actions.report_result(bot1.id, bot2.id, score)
+
+            if not (bot1.is_active and bot2.is_active):
+                continue
+
+            if bot1 == bot or bot2 == bot:
+                unplayed_games[(bot1.id, bot2.id)] -= 1
+
+        unplayed_games = {
+            ids: count for ids, count in unplayed_games.items() if count > 0
+        }
+
+        self.assertEqual(tournament.unplayed_games_for_bot(bot), unplayed_games)
+
+    def test_unplayed_games_for_new_bot(self):
+        bot = self.active_bots[0]
+
+        unplayed_games = {}
+        for other_bot in self.active_bots[1:]:
+            unplayed_games[(bot.id, other_bot.id)] = 5
+            unplayed_games[(other_bot.id, bot.id)] = 5
+
+        self.assertEqual(tournament.unplayed_games_for_bot(bot), unplayed_games)
+
+    def test_unplayed_games_for_bot_when_bot_not_active(self):
+        bot = self.inactive_bots[0]
+        self.assertEqual(tournament.unplayed_games_for_bot(bot), {})
+
+    @given(st.results(num_bots=6, num_games=40))
+    def test_all_unplayed_games(self, results):
+        unplayed_games = {}
+
+        for bot1 in self.active_bots:
+            for bot2 in self.active_bots:
+                if bot1 == bot2:
+                    continue
+
+                unplayed_games[(bot1.id, bot2.id)] = 5
+
+        for bot1_ix, bot2_ix, score in results:
+            bot1 = self.bots[bot1_ix]
+            bot2 = self.bots[bot2_ix]
+
+            if bot1.user == bot2.user:
+                continue
+
+            actions.report_result(bot1.id, bot2.id, score)
+
+            if not (bot1.is_active and bot2.is_active):
+                continue
+
+            unplayed_games[(bot1.id, bot2.id)] -= 1
+
+        unplayed_games = {
+            ids: count for ids, count in unplayed_games.items() if count > 0
+        }
+
+        self.assertEqual(tournament.all_unplayed_games(), unplayed_games)

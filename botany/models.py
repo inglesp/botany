@@ -50,6 +50,8 @@ class Bot(AbastractBotanyModel):
     is_public = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
 
+    objects = managers.BotManager()
+
     def __init__(self, *args, **kwargs):
         self._score = None
         super().__init__(*args, **kwargs)
@@ -88,3 +90,5 @@ class Game(AbastractBotanyModel):
     bot1 = models.ForeignKey(Bot, related_name="bot1_games", on_delete=models.CASCADE)
     bot2 = models.ForeignKey(Bot, related_name="bot2_games", on_delete=models.CASCADE)
     score = models.IntegerField()
+
+    objects = managers.GameManager()

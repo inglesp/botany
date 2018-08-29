@@ -28,4 +28,4 @@ def results(draw, num_bots, num_games):
 
     assume(bot1_ixs != bot2_ixs)
 
-    return zip(bot1_ixs, bot2_ixs, scores)
+    return list(zip(bot1_ixs, bot2_ixs, scores))

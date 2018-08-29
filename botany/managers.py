@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.db import models
 from django.utils.crypto import get_random_string
 
 
@@ -31,3 +32,13 @@ class UserManager(BaseUserManager):
             is_admin=True,
             is_superuser=True,
         )
+
+
+class BotManager(models.Manager):
+    def active_bots(self):
+        return self.filter(is_active=True)
+
+
+class GameManager(models.Manager):
+    def games_between_active_bots(self):
+        return self.filter(bot1__is_active=True, bot2__is_active=True)
