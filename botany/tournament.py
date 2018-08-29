@@ -4,6 +4,14 @@ from .models import Bot, Game
 
 
 def unplayed_games_for_bot(bot):
+    """Find all unplayed games for given bot.
+
+    Returns a dict mapping (bot1.id, bot2.id) to number of games bewteen bot1
+    and bot2 that haven't been played yet, where given bot is one of bot1 or
+    bot2.
+
+    Could be made more efficient with single query.
+    """
     unplayed_games = {}
 
     if not bot.is_active:
@@ -25,6 +33,13 @@ def unplayed_games_for_bot(bot):
 
 
 def all_unplayed_games():
+    """Find all unplayed games.
+
+    Returns a dict mapping (bot1.id, bot2.id) to number of games bewteen bot1
+    and bot2 that haven't been played yet.
+
+    Could be made more efficient with single query.
+    """
     unplayed_games = {}
 
     for bot1 in Bot.objects.active_bots():
@@ -42,6 +57,25 @@ def all_unplayed_games():
 
 
 def calculate_standings():
+    """Calculate tournament standings.
+
+    Returns queryset of active bots annotated with:
+        num_played
+        num_wins
+        num_draws
+        num_losses
+        score
+
+    where score is (num_wins - num_losses).
+
+    Bots are ordered according to:
+        ORDER BY score DESC, num_played, num_wins DESC, b.name
+
+    This is likely to be called often -- whenever the homepage is loaded -- so
+    the results could be cached, or we could use materialized views rather than
+    CTEs.
+    """
+
     sql = """
 WITH active_bots AS (
     SELECT * FROM botany_bot
