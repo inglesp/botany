@@ -1,4 +1,3 @@
-from django.test import override_settings
 from hypothesis import given
 from hypothesis.extra.django import TestCase
 
@@ -8,7 +7,6 @@ from . import factories
 from . import strategies as st
 
 
-@override_settings(BOTANY_NUM_ROUNDS=5)
 class TournamentTests(TestCase):
     @classmethod
     def setUpTestData(cls):
