@@ -1,5 +1,7 @@
 dj-database-url
 django
+django-dotenv
+django-rq
 psycopg2-binary
 
 # Development

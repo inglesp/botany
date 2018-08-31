@@ -2,7 +2,14 @@
 import os
 import sys
 
+import dotenv
+
 if __name__ == "__main__":
+    dotenv.read_dotenv(".env")
+
+    if len(sys.argv) > 1 and sys.argv[1] == "test":
+        dotenv.read_dotenv(".env-test")
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "botany.settings")
     try:
         from django.core.management import execute_from_command_line

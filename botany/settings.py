@@ -15,7 +15,7 @@ import os
 import dj_database_url
 
 # Game settings
-BOTANY_NUM_ROUNDS = 5
+BOTANY_NUM_ROUNDS = int(os.environ["BOTANY_NUM_ROUNDS"])
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +37,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "botany",
+    "django_rq",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -80,6 +81,17 @@ WSGI_APPLICATION = "botany.wsgi.application"
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {"default": dj_database_url.config(default="postgres://localhost/botany")}
+
+
+# Queues
+# https://github.com/rq/django-rq
+
+USE_QUEUES = not bool(os.getenv("DONT_USE_QUEUES"))
+
+QUEUE_NAMES = [f"queue_{ix}" for ix in range(BOTANY_NUM_ROUNDS)]
+QUEUE_CONFIG = {"HOST": "localhost", "PORT": 6379, "DB": 0}
+
+RQ_QUEUES = {name: QUEUE_CONFIG for name in QUEUE_NAMES}
 
 
 # Password validation

@@ -1,4 +1,6 @@
 from .models import Bot, Game, User
+from .scheduler import schedule_games
+from .tournament import all_unplayed_games, unplayed_games_for_bot
 
 
 def create_user(email_addr, name):
@@ -30,13 +32,11 @@ def set_bot_active(bot):
 
 
 def schedule_unplayed_games_for_bot(bot):
-    # TODO
-    pass
+    schedule_games(unplayed_games_for_bot(bot))
 
 
 def schedule_all_unplayed_games():
-    # TODO
-    pass
+    schedule_games(all_unplayed_games())
 
 
 def play_game(bot1_id, bot2_id):
