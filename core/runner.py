@@ -1,19 +1,3 @@
-# TODO:
-#
-
-# TODONE:
-# * Capture list of moves
-# * Allow functions to return state
-# * Pass some of:
-#     * board (copy)
-#     * move_list (copy)
-#     * token
-#     * state
-#   to functions, depending on function signature
-# * Validate that move is valid
-# * Handle exceptions in functions
-# * Ensure functions don't overspend opcodes
-
 import inspect
 import itertools
 import traceback
