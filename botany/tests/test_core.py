@@ -99,6 +99,21 @@ class RunGameTests(TestCase):
 
         self.assertEqual(result, expected_result)
 
+    def test_invalid_move(self):
+        # X | . | .
+        # --|---|--
+        # . | . | .
+        # --|---|--
+        # . | . | .
+
+        result = run_game(game, get_next_move_1, get_next_move_8)
+
+        expected_result = Result(
+            result_type=ResultType.INVALID_MOVE, score=1, move_list=[0], traceback=None
+        )
+
+        self.assertEqual(result, expected_result)
+
 
 def get_next_move_1(board):
     """Return first available move."""
@@ -177,3 +192,13 @@ def get_next_move_7(board, token, state, move_list):
         assert state == "Idaho"
 
     return available_moves[0], "Idaho"
+
+
+def get_next_move_8(board):
+    """Return invalid move."""
+
+    available_moves = game.available_moves(board)
+
+    for move in range(9):
+        if move not in available_moves:
+            return move

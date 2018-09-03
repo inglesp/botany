@@ -53,6 +53,8 @@ def run_game(game, fn1, fn2):
 
     param_lists = [get_param_list(fn1), get_param_list(fn2)]
     states = [None, None]
+    winning_scores = [1, -1]
+    losing_scores = [-1, 1]
     board = game.new_board()
     move_list = []
 
@@ -84,16 +86,18 @@ def run_game(game, fn1, fn2):
         except TypeError:
             move, state = rv, None
 
+        if move not in available_moves:
+            return build_result(ResultType.INVALID_MOVE, losing_scores[player_ix])
+
         states[player_ix] = state
         move_list.append(move)
 
         game.make_move(board, move, token)
 
         winner = game.check_winner(board)
-        if winner == game.TOKENS[0]:
-            return build_result(ResultType.COMPLETE, 1)
-        elif winner == game.TOKENS[1]:
-            return build_result(ResultType.COMPLETE, -1)
+        if winner is not None:
+            assert winner == token
+            return build_result(ResultType.COMPLETE, winning_scores[player_ix])
 
 
 def get_param_list(fn):
