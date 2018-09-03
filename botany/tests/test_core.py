@@ -114,6 +114,20 @@ class RunGameTests(TestCase):
 
         self.assertEqual(result, expected_result)
 
+    def test_exception(self):
+        # X | . | .
+        # --|---|--
+        # . | . | .
+        # --|---|--
+        # . | . | .
+
+        result = run_game(game, get_next_move_1, get_next_move_9)
+
+        self.assertEqual(result.result_type, ResultType.EXCEPTION)
+        self.assertEqual(result.score, 1)
+        self.assertEqual(result.move_list, [0])
+        self.assertIn("KeyError: 123", result.traceback)
+
 
 def get_next_move_1(board):
     """Return first available move."""
@@ -202,3 +216,15 @@ def get_next_move_8(board):
     for move in range(9):
         if move not in available_moves:
             return move
+
+
+def get_next_move_9(board):
+    """Raise exception."""
+
+    def f(n):
+        if n < 0:
+            return {}[123]
+
+        return f(n - 1)
+
+    return f(3)

@@ -1,7 +1,5 @@
 # TODO:
 #
-# * Validate that move is valid
-# * Handle exceptions in functions
 # * Ensure functions don't overspend opcodes
 
 # TODONE:
@@ -13,9 +11,12 @@
 #     * token
 #     * state
 #   to functions, depending on function signature
+# * Validate that move is valid
+# * Handle exceptions in functions
 
 import inspect
 import itertools
+import traceback
 from copy import copy, deepcopy
 from enum import Enum, auto
 
@@ -79,7 +80,12 @@ def run_game(game, fn1, fn2):
             if param in param_lists[player_ix]
         }
 
-        rv = fn(**args)
+        try:
+            rv = fn(**args)
+        except Exception:
+            return build_result(
+                ResultType.EXCEPTION, losing_scores[player_ix], traceback.format_exc()
+            )
 
         try:
             move, state = rv
