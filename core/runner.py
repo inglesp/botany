@@ -1,6 +1,5 @@
 # TODO:
 #
-# * Ensure functions don't overspend opcodes
 
 # TODONE:
 # * Capture list of moves
@@ -13,6 +12,7 @@
 #   to functions, depending on function signature
 # * Validate that move is valid
 # * Handle exceptions in functions
+# * Ensure functions don't overspend opcodes
 
 import inspect
 import itertools
@@ -21,6 +21,8 @@ from copy import copy, deepcopy
 from enum import Enum, auto
 
 import attr
+
+from .tracer import OpCodeLimitExceeded, limited_opcodes
 
 VALID_PARAMS = ["board", "move_list", "token", "state"]
 
@@ -40,7 +42,7 @@ class Result:
     traceback = attr.ib()
 
 
-def run_game(game, fn1, fn2):
+def run_game(game, fn1, fn2, opcode_limit=None):
     def build_result(result_type, score, traceback=None):
         return Result(
             result_type=result_type,
@@ -81,7 +83,13 @@ def run_game(game, fn1, fn2):
         }
 
         try:
-            rv = fn(**args)
+            if opcode_limit is None:
+                rv = fn(**args)
+            else:
+                with limited_opcodes(opcode_limit):
+                    rv = fn(**args)
+        except OpCodeLimitExceeded:
+            return build_result(ResultType.TIMEOUT, losing_scores[player_ix])
         except Exception:
             return build_result(
                 ResultType.EXCEPTION, losing_scores[player_ix], traceback.format_exc()

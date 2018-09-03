@@ -4,8 +4,40 @@
 import itertools
 from unittest import TestCase
 
+from core import tracer
 from core.runner import Result, ResultType, run_game
 from noughtsandcrosses import game
+
+
+class TracerTests(TestCase):
+    @staticmethod
+    def f(n):
+        x = 0
+        for _ in range(n):
+            x += 1
+
+    def test_not_exceeding_limit(self):
+        with tracer.limited_opcodes(100):
+            self.f(10)
+
+    def test_exceeding_limit(self):
+        with self.assertRaises(tracer.OpCodeLimitExceeded):
+            with tracer.limited_opcodes(100):
+                self.f(10)
+                self.f(10)
+
+    def test_count_is_reset_on_each_call(self):
+        with tracer.limited_opcodes(100):
+            self.f(10)
+
+        with tracer.limited_opcodes(100):
+            self.f(10)
+
+    def test_opcode_count(self):
+        with tracer.limited_opcodes(100) as trace:
+            self.f(10)
+
+        self.assertTrue(0 < trace.opcode_count < 100)
 
 
 class RunGameTests(TestCase):
@@ -128,6 +160,39 @@ class RunGameTests(TestCase):
         self.assertEqual(result.move_list, [0])
         self.assertIn("KeyError: 123", result.traceback)
 
+    def test_timeout(self):
+        # X | . | .
+        # --|---|--
+        # . | . | .
+        # --|---|--
+        # . | . | .
+
+        result = run_game(game, get_next_move_1, get_next_move_10, opcode_limit=1000)
+
+        expected_result = Result(
+            result_type=ResultType.TIMEOUT, score=1, move_list=[0], traceback=None
+        )
+
+        self.assertEqual(result, expected_result)
+
+    def test_timeout_when_opcode_limit_not_set(self):
+        # X | O | X
+        # --|---|--
+        # O | X | O
+        # --|---|--
+        # X | . | .
+
+        result = run_game(game, get_next_move_1, get_next_move_10)
+
+        expected_result = Result(
+            result_type=ResultType.COMPLETE,
+            score=1,
+            move_list=[0, 1, 2, 3, 4, 5, 6],
+            traceback=None,
+        )
+
+        self.assertEqual(result, expected_result)
+
 
 def get_next_move_1(board):
     """Return first available move."""
@@ -228,3 +293,14 @@ def get_next_move_9(board):
         return f(n - 1)
 
     return f(3)
+
+
+def get_next_move_10(board):
+    """Burn through lots of opcodes and then return first available move."""
+
+    x = 0
+    for i in range(1000):
+        x += 1
+
+    available_moves = game.available_moves(board)
+    return available_moves[0]
