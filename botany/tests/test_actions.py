@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from botany import actions, scheduler
+from botany import actions, models, scheduler
 
 from . import factories
 
@@ -139,10 +139,11 @@ class ScheduleAllUnplayedGamesTests(TestCase):
 
 class PlayGameTests(TestCase):
     def test_play_game(self):
-        # TODO
         bot1, bot2 = [factories.create_bot() for _ in range(2)]
 
         actions.play_game(bot1.id, bot2.id)
+
+        models.Game.objects.get(bot1_id=bot1.id, bot2_id=bot2.id)
 
 
 class ReportResultTest(TestCase):

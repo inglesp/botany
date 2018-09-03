@@ -15,7 +15,9 @@ import os
 import dj_database_url
 
 # Game settings
+BOTANY_GAME_MODULE = os.environ["BOTANY_GAME_MODULE"]
 BOTANY_NUM_ROUNDS = int(os.environ["BOTANY_NUM_ROUNDS"])
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

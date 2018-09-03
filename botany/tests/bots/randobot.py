@@ -1,2 +1,8 @@
-def get_next_move(*args):
-    return 4
+import random
+
+from noughtsandcrosses import game
+
+
+def get_next_move(board):
+    available_moves = game.available_moves(board)
+    return random.choice(available_moves)

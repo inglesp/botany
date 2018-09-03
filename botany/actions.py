@@ -1,3 +1,7 @@
+from django.conf import settings
+
+from core import loader, runner
+
 from .models import Bot, Game, User
 from .scheduler import schedule_games
 from .tournament import all_unplayed_games, unplayed_games_for_bot
@@ -40,8 +44,19 @@ def schedule_all_unplayed_games():
 
 
 def play_game(bot1_id, bot2_id):
-    # TODO
-    pass
+    # TODO: check whether there have been enough reported games between bots
+    # TODO: run game in subprocess and ensure environment variables are not accessible
+    game = loader.load_module_from_path(settings.BOTANY_GAME_MODULE)
+
+    bot1 = Bot.objects.get(id=bot1_id)
+    bot2 = Bot.objects.get(id=bot2_id)
+
+    mod1 = loader.create_module_from_str("mod1", bot1.code)
+    mod2 = loader.create_module_from_str("mod2", bot2.code)
+
+    score = runner.run_game(game, mod1.get_next_move, mod2.get_next_move)
+
+    report_result(bot1_id, bot2_id, score)
 
 
 def report_result(bot1_id, bot2_id, score):
