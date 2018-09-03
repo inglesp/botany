@@ -54,9 +54,9 @@ def play_game(bot1_id, bot2_id):
     mod1 = loader.create_module_from_str("mod1", bot1.code)
     mod2 = loader.create_module_from_str("mod2", bot2.code)
 
-    score = runner.run_game(game, mod1.get_next_move, mod2.get_next_move)
+    result = runner.run_game(game, mod1.get_next_move, mod2.get_next_move)
 
-    report_result(bot1_id, bot2_id, score)
+    report_result(bot1_id, bot2_id, result.score)
 
 
 def report_result(bot1_id, bot2_id, score):
