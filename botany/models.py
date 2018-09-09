@@ -54,6 +54,10 @@ class Bot(AbastractBotanyModel):
 
     def __init__(self, *args, **kwargs):
         self._score = None
+        self._num_played = None
+        self._num_wins = None
+        self._num_draws = None
+        self._num_losses = None
         super().__init__(*args, **kwargs)
 
     def set_public(self):
@@ -69,7 +73,8 @@ class Bot(AbastractBotanyModel):
         self.is_active = True
         self.save()
 
-    def get_score(self):
+    @property
+    def score(self):
         if self._score is None:
             bot1_games_score = (
                 self.bot1_games.aggregate(score=models.Sum("score"))["score"] or 0
@@ -80,10 +85,57 @@ class Bot(AbastractBotanyModel):
             self._score = bot1_games_score - bot2_games_score
         return self._score
 
-    def set_score(self, score):
+    @score.setter
+    def score(self, score):
         self._score = score
 
-    score = property(get_score, set_score)
+    @property
+    def num_played(self):
+        if self._num_played is None:
+            bot1_games_num_played = self.bot1_games.count()
+            bot2_games_num_played = self.bot2_games.count()
+            self._num_played = bot1_games_num_played + bot2_games_num_played
+        return self._num_played
+
+    @num_played.setter
+    def num_played(self, num_played):
+        self._num_played = num_played
+
+    @property
+    def num_wins(self):
+        if self._num_wins is None:
+            bot1_games_num_wins = self.bot1_games.filter(score=1).count()
+            bot2_games_num_wins = self.bot2_games.filter(score=-1).count()
+            self._num_wins = bot1_games_num_wins + bot2_games_num_wins
+        return self._num_wins
+
+    @num_wins.setter
+    def num_wins(self, num_wins):
+        self._num_wins = num_wins
+
+    @property
+    def num_draws(self):
+        if self._num_draws is None:
+            bot1_games_num_draws = self.bot1_games.filter(score=0).count()
+            bot2_games_num_draws = self.bot2_games.filter(score=0).count()
+            self._num_draws = bot1_games_num_draws + bot2_games_num_draws
+        return self._num_draws
+
+    @num_draws.setter
+    def num_draws(self, num_draws):
+        self._num_draws = num_draws
+
+    @property
+    def num_losses(self):
+        if self._num_losses is None:
+            bot1_games_num_losses = self.bot1_games.filter(score=-1).count()
+            bot2_games_num_losses = self.bot2_games.filter(score=1).count()
+            self._num_losses = bot1_games_num_losses + bot2_games_num_losses
+        return self._num_losses
+
+    @num_losses.setter
+    def num_losses(self, num_losses):
+        self._num_losses = num_losses
 
 
 class Game(AbastractBotanyModel):
