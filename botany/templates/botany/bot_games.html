@@ -1,0 +1,16 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+    <h1>Games against {{ bot.name }}</h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-4">
+    {% include "botany/_games.html" with games=games %}
+  </div>
+</div>
+
+{% endblock %}

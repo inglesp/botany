@@ -1,19 +1,17 @@
-"""botany URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/2.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
 from django.urls import path
 
-urlpatterns = [path("admin/", admin.site.urls)]
+from . import views
+
+urlpatterns = [
+    path("", views.index, name="index"),
+    path("standings/", views.full_standings, name="full_standings"),
+    path("bots/<bot_id>/", views.bot, name="bot"),
+    path("bots/<bot_id>/standings/", views.bot_standings, name="bot_standings"),
+    path("bots/<bot_id>/games/", views.bot_games, name="bot_games"),
+    path(
+        "bots/<bot_id>/games/<other_bot_id>/",
+        views.bot_head_to_head,
+        name="bot_head_to_head",
+    ),
+    path("games/<game_id>/", views.game, name="game"),
+]

@@ -1,0 +1,13 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+    <h1>{{ bot.name }} vs {{ other_bot.name }}</h1>
+
+    <p>{{ bot.name }} has played {{ summary.num_played }} games against {{ other_bot.name }}. ({{ summary.num_wins }} wins / {{ summary.num_draws }} draws / {{ summary.num_losses }} losses).</p>
+
+    {% include "botany/_games.html" with games=games %}
+  </div>
+</div>
+{% endblock %}

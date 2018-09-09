@@ -144,3 +144,13 @@ class Game(AbastractBotanyModel):
     score = models.IntegerField()
 
     objects = managers.GameManager()
+
+    def summary(self):
+        if self.score == 1:
+            return f"{self.bot1.name} won"
+        elif self.score == 0:
+            return "draw"
+        elif self.score == -1:
+            return f"{self.bot2.name} won"
+        else:
+            assert False

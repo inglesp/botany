@@ -1,0 +1,31 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+    <p>Welcome to Botany.</p>
+
+    <p>
+      There have been {{ summary.num_games_between_active_bots }} games between {{ summary.num_active_bots }} active bots.
+      ({{ summary.num_games }} games and {{ summary.num_bots }} bots in total.)
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-8">
+    <h2>Leaderboard</h2>
+
+    <p><a href="{% url 'full_standings' %}">Full standings</a></p>
+
+    {% include "botany/_standings.html" with standings=top_of_standings linkto="bot" %}
+  </div>
+
+  <div class="col-sm-4">
+    <h2>Recent games</h2>
+
+    {% include "botany/_games.html" with games=recent_games %}
+  </div>
+</div>
+
+{% endblock %}

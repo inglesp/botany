@@ -1,0 +1,16 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+    <h1>Standings against {{ bot.name }}</h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-8">
+    {% include "botany/_standings.html" with standings=standings linkto="bot_head_to_head" this_bot_id=bot.id %}
+  </div>
+</div>
+
+{% endblock %}

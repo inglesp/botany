@@ -1,0 +1,7 @@
+<ul>
+  {% for g in games %}
+  <li>
+    <a href="{% url 'game' g.id %}">{{ g.bot1.name }} vs {{ g.bot2.name }} ({{ g.summary }})</a>
+  </li>
+  {% endfor %}
+</ul>

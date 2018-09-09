@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
+from django.db.models import Q
 from django.utils.crypto import get_random_string
 
 
@@ -42,3 +43,17 @@ class BotManager(models.Manager):
 class GameManager(models.Manager):
     def games_between_active_bots(self):
         return self.filter(bot1__is_active=True, bot2__is_active=True)
+
+    def all_against_bot(self, bot):
+        return self.filter(Q(bot1=bot) | Q(bot2=bot)).order_by("-created_at")
+
+    def all_between_bots(self, bot1, bot2):
+        return self.filter(
+            (Q(bot1=bot1) & Q(bot2=bot2)) | (Q(bot1=bot2) & Q(bot2=bot1))
+        ).order_by("-created_at")
+
+    def recent(self, n):
+        return self.order_by("-created_at")[:n]
+
+    def recent_against_bot(self, bot, n):
+        return self.filter(Q(bot1=bot) | Q(bot2=bot)).order_by("-created_at")[:n]

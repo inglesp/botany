@@ -56,6 +56,72 @@ def all_unplayed_games():
     return unplayed_games
 
 
+def summary():
+    return {
+        "num_bots": Bot.objects.count(),
+        "num_active_bots": Bot.objects.active_bots().count(),
+        "num_games": Game.objects.count(),
+        "num_games_between_active_bots": Game.objects.games_between_active_bots().count(),
+    }
+
+
+def recent_games():
+    return Game.objects.recent(10)
+
+
+def recent_games_against_bot(bot):
+    return Game.objects.recent_against_bot(bot, 20)
+
+
+def all_games_against_bot(bot):
+    return Game.objects.all_against_bot(bot)
+
+
+def all_games_between_bots(bot1, bot2):
+    return Game.objects.all_between_bots(bot1, bot2)
+
+
+def head_to_head_summary(games, bot1, bot2):
+    num_played = 0
+    num_wins = 0
+    num_draws = 0
+    num_losses = 0
+
+    for game in games:
+        num_played += 1
+        if game.bot1 == bot1:
+            assert game.bot2 == bot2
+
+            if game.score == 1:
+                num_wins += 1
+            elif game.score == 0:
+                num_draws += 1
+            elif game.score == -1:
+                num_losses += 1
+            else:
+                assert False
+
+        else:
+            assert game.bot1 == bot2
+            assert game.bot2 == bot1
+
+            if game.score == 1:
+                num_losses += 1
+            elif game.score == 0:
+                num_draws += 1
+            elif game.score == -1:
+                num_wins += 1
+            else:
+                assert False
+
+    return {
+        "num_played": num_played,
+        "num_wins": num_wins,
+        "num_draws": num_draws,
+        "num_losses": num_losses,
+    }
+
+
 def standings():
     """Calculate tournament standings.
 

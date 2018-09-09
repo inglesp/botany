@@ -1,0 +1,30 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Bot</th>
+      <th>P</th>
+      <th>W</th>
+      <th>D</th>
+      <th>L</th>
+      <th>Points</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for bot in standings %}
+    <tr>
+      {% if linkto == 'bot' %}
+      <td><a href="{% url linkto bot.id %}">{{ bot.name }}</a></td>
+      {% elif linkto == 'bot_head_to_head' %}
+      <td><a href="{% url linkto this_bot_id bot.id %}">{{ bot.name }}</a></td>
+      {% else %}
+      <td>{{ bot.name }}</td>
+      {% endif %}
+      <td>{{ bot.num_played }}</td>
+      <td>{{ bot.num_wins }}</td>
+      <td>{{ bot.num_draws }}</td>
+      <td>{{ bot.num_losses }}</td>
+      <td>{{ bot.score }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

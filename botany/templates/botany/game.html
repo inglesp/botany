@@ -1,0 +1,28 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+    <h1>Game {{ game.id }}</h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-2">
+    <table class="table table-sm">
+      <tr>
+        <th>Bot 1</th>
+        <td>{{ bot1.name }}</td>
+      </tr>
+      <tr>
+        <th>Bot 2</th>
+        <td>{{ bot2.name }}</td>
+      </tr>
+      <tr>
+        <th>Result</th>
+        <td>{{ game.summary }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endblock %}

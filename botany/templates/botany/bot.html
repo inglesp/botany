@@ -1,0 +1,33 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+    <h1>{{ bot.name }}</h1>
+
+    <p>This bot has played {{ bot.num_played }} games ({{ bot.num_wins }} wins / {{ bot.num_draws }} draws / {{ bot.num_losses }} losses).</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-8">
+    <h2>These bots have done best aganist {{ bot.name }}...</h2>
+
+    {% include "botany/_standings.html" with standings=top_of_standings linkto="bot_head_to_head" this_bot_id=bot.id %}
+
+    <h2>...and these bots have done worst</h2>
+
+    {% include "botany/_standings.html" with standings=bottom_of_standings linkto="bot_head_to_head" this_bot_id=bot.id %}
+
+    <p><a href="{% url 'bot_standings' bot_id=bot.id %}">All standings against {{ bot.name }}</a></p>
+  </div>
+
+  <div class="col-sm-4">
+    <h2>Recent games</h2>
+
+    {% include "botany/_games.html" with games=recent_games %}
+
+    <p><a href="{% url 'bot_games' bot_id=bot.id %}">All games against {{ bot.name }}</a></p>
+  </div>
+</div>
+{% endblock %}
