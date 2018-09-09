@@ -2,6 +2,7 @@ import os.path as op
 from functools import lru_cache
 
 from botany import actions
+from core.runner import Result, ResultType
 
 user_ix = 0
 bot_ix = 0
@@ -38,3 +39,17 @@ def bot_code(bot_name):
     path = op.join(op.dirname(op.abspath(__file__)), "bots", bot_name + ".py")
     with open(path) as f:
         return f.read()
+
+
+def report_result(bot1_id, bot2_id, score, move_list=None):
+    if move_list is None:
+        move_list = []
+
+    result = Result(
+        result_type=ResultType.COMPLETE,
+        score=score,
+        move_list=move_list,
+        traceback=None,
+    )
+
+    actions.report_result(bot1_id, bot2_id, result)

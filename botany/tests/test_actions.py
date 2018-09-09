@@ -2,6 +2,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 
 from botany import actions, models, scheduler
+from core.runner import Result, ResultType
 
 from . import factories
 
@@ -96,9 +97,9 @@ class SetBotActiveTests(TestCase):
 class ScheduleUnplayedGamesForBotTests(TestCase):
     def test_schedule_unplayed_games_for_bot(self):
         bot1, bot2 = [factories.create_bot() for _ in range(2)]
-        actions.report_result(bot1.id, bot2.id, 1)
-        actions.report_result(bot1.id, bot2.id, -1)
-        actions.report_result(bot2.id, bot1.id, 1)
+        factories.report_result(bot1.id, bot2.id, 1)
+        factories.report_result(bot1.id, bot2.id, -1)
+        factories.report_result(bot2.id, bot1.id, 1)
 
         scheduler.clear_queues()
 
@@ -117,12 +118,12 @@ class ScheduleUnplayedGamesForBotTests(TestCase):
 class ScheduleAllUnplayedGamesTests(TestCase):
     def test_schedule_unplayed_games_for_bot(self):
         bot1, bot2, bot3 = [factories.create_bot() for _ in range(3)]
-        actions.report_result(bot1.id, bot2.id, 1)
-        actions.report_result(bot1.id, bot2.id, -1)
-        actions.report_result(bot1.id, bot3.id, 1)
-        actions.report_result(bot1.id, bot3.id, -1)
-        actions.report_result(bot2.id, bot1.id, 1)
-        actions.report_result(bot3.id, bot1.id, 1)
+        factories.report_result(bot1.id, bot2.id, 1)
+        factories.report_result(bot1.id, bot2.id, -1)
+        factories.report_result(bot1.id, bot3.id, 1)
+        factories.report_result(bot1.id, bot3.id, -1)
+        factories.report_result(bot2.id, bot1.id, 1)
+        factories.report_result(bot3.id, bot1.id, 1)
 
         scheduler.clear_queues()
 
@@ -150,10 +151,26 @@ class ReportResultTest(TestCase):
     def test_report_result(self):
         bot1, bot2 = [factories.create_bot() for _ in range(2)]
 
-        actions.report_result(bot1.id, bot2.id, 1)
-        actions.report_result(bot1.id, bot2.id, -1)
-        actions.report_result(bot2.id, bot1.id, 1)
-        actions.report_result(bot2.id, bot1.id, 0)
+        def build_result(score):
+            return Result(
+                result_type=ResultType.COMPLETE,
+                score=score,
+                move_list=[0, 1, 4, 7, 8],
+                traceback=None,
+            )
+
+        actions.report_result(bot1.id, bot2.id, build_result(1))
+
+        game = models.Game.objects.get()
+
+        self.assertEqual(game.bot1_id, bot1.id)
+        self.assertEqual(game.bot2_id, bot2.id)
+        self.assertEqual(game.score, 1)
+        self.assertEqual(game.moves, "01478")
+
+        actions.report_result(bot1.id, bot2.id, build_result(-1))
+        actions.report_result(bot2.id, bot1.id, build_result(1))
+        actions.report_result(bot2.id, bot1.id, build_result(0))
 
         self.assertEqual(bot1.bot1_games.count(), 2)
         self.assertEqual(bot1.bot2_games.count(), 2)

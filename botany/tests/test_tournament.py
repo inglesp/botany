@@ -1,7 +1,7 @@
 from hypothesis import given
 from hypothesis.extra.django import TestCase
 
-from botany import actions, tournament
+from botany import tournament
 
 from . import factories
 from . import strategies as st
@@ -52,7 +52,7 @@ class TournamentTests(TestCase):
             if bot1.user == bot2.user:
                 continue
 
-            actions.report_result(bot1.id, bot2.id, score)
+            factories.report_result(bot1.id, bot2.id, score)
 
             if bot1 in self.inactive_bots or bot2 in self.inactive_bots:
                 continue
@@ -124,7 +124,7 @@ class TournamentTests(TestCase):
             if bot1.user == bot2.user:
                 continue
 
-            actions.report_result(bot1.id, bot2.id, score)
+            factories.report_result(bot1.id, bot2.id, score)
 
             if bot1 in self.inactive_bots or bot2 in self.inactive_bots:
                 continue
@@ -197,7 +197,7 @@ class TournamentTests(TestCase):
             if bot1.user == bot2.user:
                 continue
 
-            actions.report_result(bot1.id, bot2.id, score)
+            factories.report_result(bot1.id, bot2.id, score)
 
             if not (bot1.is_active and bot2.is_active):
                 continue
@@ -243,7 +243,7 @@ class TournamentTests(TestCase):
             if bot1.user == bot2.user:
                 continue
 
-            actions.report_result(bot1.id, bot2.id, score)
+            factories.report_result(bot1.id, bot2.id, score)
 
             if not (bot1.is_active and bot2.is_active):
                 continue

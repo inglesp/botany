@@ -1,8 +1,6 @@
 from hypothesis import given
 from hypothesis.extra.django import TestCase
 
-from botany import actions
-
 from . import factories
 from . import strategies as st
 
@@ -43,7 +41,7 @@ class BotTests(TestCase):
             else:
                 assert False
 
-            actions.report_result(bot1.id, bot2.id, score)
+            factories.report_result(bot1.id, bot2.id, score)
 
         for bot in bots:
             self.assertEqual(bot.score, expected_scores[bot])

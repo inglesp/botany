@@ -56,10 +56,13 @@ def play_game(bot1_id, bot2_id):
 
     result = runner.run_game(game, mod1.get_next_move, mod2.get_next_move)
 
-    report_result(bot1_id, bot2_id, result.score)
+    # TODO: schedule this to be run by separate worker to minimise chance of race condition
+    report_result(bot1_id, bot2_id, result)
 
 
-def report_result(bot1_id, bot2_id, score):
+def report_result(bot1_id, bot2_id, result):
     # TODO: check whether there have been enough reported games between bots
-    # TODO: store list of moves
-    Game.objects.create(bot1_id=bot1_id, bot2_id=bot2_id, score=score)
+    moves = "".join(str(move) for move in result.move_list)
+    Game.objects.create(
+        bot1_id=bot1_id, bot2_id=bot2_id, score=result.score, moves=moves
+    )
