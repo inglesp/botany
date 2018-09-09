@@ -153,7 +153,7 @@ ORDER BY score DESC, num_played, num_wins DESC, b.name
 
 
 def standings_against_bot(bot):
-    """Calculate tournament standings.
+    """Calculate standings against bot.
 
     Returns queryset of active bots annotated with:
         num_played
@@ -162,14 +162,11 @@ def standings_against_bot(bot):
         num_losses
         score
 
-    where score is (num_wins - num_losses).
+    where score is (num_wins - num_losses) and all values are calculated from
+    games played against given bot.
 
     Bots are ordered according to:
         ORDER BY score DESC, num_played, num_wins DESC, b.name
-
-    This is likely to be called often -- whenever the homepage is loaded -- so
-    the results could be cached, or we could use materialized views rather than
-    CTEs.
     """
 
     sql = """
