@@ -5,7 +5,7 @@ import itertools
 from unittest import TestCase
 
 from core import tracer
-from core.runner import Result, ResultType, run_game
+from core.runner import Result, ResultType, rerun_game, run_game
 from noughtsandcrosses import game
 
 
@@ -38,6 +38,23 @@ class TracerTests(TestCase):
             self.f(10)
 
         self.assertTrue(0 < trace.opcode_count < 100)
+
+
+class RerunGameTests(TestCase):
+    def test_rerun_game(self):
+        move_list = [0, 1, 2, 3, 4, 5, 6]
+        boards = rerun_game(game, move_list)
+        expected_boards = [
+            [".", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["X", ".", ".", ".", ".", ".", ".", ".", "."],
+            ["X", "O", ".", ".", ".", ".", ".", ".", "."],
+            ["X", "O", "X", ".", ".", ".", ".", ".", "."],
+            ["X", "O", "X", "O", ".", ".", ".", ".", "."],
+            ["X", "O", "X", "O", "X", ".", ".", ".", "."],
+            ["X", "O", "X", "O", "X", "O", ".", ".", "."],
+            ["X", "O", "X", "O", "X", "O", "X", ".", "."],
+        ]
+        self.assertEqual(boards, expected_boards)
 
 
 class RunGameTests(TestCase):

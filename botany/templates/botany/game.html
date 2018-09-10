@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="row">
-  <div class="col-sm">
+  <div class="col-md">
     <h1>Game {{ game.id }}</h1>
   </div>
 </div>
 
 <div class="row">
-  <div class="col-2">
+  <div class="col-md-3">
     <table class="table table-sm">
       <tr>
         <th>Bot 1</th>
@@ -23,6 +23,28 @@
         <td>{{ game.summary }}</td>
       </tr>
     </table>
+  </div>
+
+  <div class="col-md">
+    <div class="row justify-content-md-center">
+      <div id="board-controls" class="btn-group" role="group">
+        <button type="button" id="wind-back-to-start" class="btn btn-light">&lt; &lt;</button>
+        <button type="button" id="wind-back" class="btn btn-light">&lt;</button>
+        <button type="button" id="wind-on" class="btn btn-light">&gt;</button>
+        <button type="button" id="wind-on-to-end" class="btn btn-light">&gt; &gt;</button>
+      </div>
+    </div>
+
+    <div class="row justify-content-md-center">
+      <style type="text/css">
+        {{ styles|safe }}
+      </style>
+      {% for board in boards %}
+      <div class="board">
+        {{ board|safe }}
+      </div>
+      {% endfor %}
+    </div>
   </div>
 </div>
 {% endblock %}

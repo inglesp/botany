@@ -26,6 +26,19 @@ class Result:
     traceback = attr.ib()
 
 
+def rerun_game(game, move_list):
+    boards = [game.new_board()]
+
+    for token, move in zip(itertools.cycle(game.TOKENS), move_list):
+        board = deepcopy(boards[-1])
+        available_moves = game.available_moves(board)
+        assert move in available_moves
+        game.make_move(board, move, token)
+        boards.append(board)
+
+    return boards
+
+
 def run_game(game, fn1, fn2, opcode_limit=None):
     def build_result(result_type, score, traceback=None):
         return Result(

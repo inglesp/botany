@@ -155,3 +155,6 @@ class Game(AbastractBotanyModel):
             return f"{self.bot2.name} won"
         else:
             assert False
+
+    def move_list(self):
+        return [int(s) for s in self.moves]

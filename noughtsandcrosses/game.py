@@ -41,3 +41,52 @@ def check_winner(board):
             return board[line[0]]
 
     return None
+
+
+def render_html(board):
+    return """
+      <div class="noughtsandcrosses-grid">
+        <table>
+          <tr>
+            <td class="bordered-right bordered-bottom">{}</td>
+            <td class="bordered-right bordered-bottom">{}</td>
+            <td class="bordered-bottom">{}</td>
+          </tr>
+          <tr>
+            <td class="bordered-right bordered-bottom">{}</td>
+            <td class="bordered-right bordered-bottom">{}</td>
+            <td class="bordered-bottom">{}</td>
+          </tr>
+          <tr>
+            <td class="bordered-right bordered-left">{}</td>
+            <td class="bordered-right">{}</td>
+            <td>{}</td>
+          </tr>
+        </table>
+      </div>
+    """.format(
+        *board
+    )
+
+
+html_styles = """
+.noughtsandcrosses-grid table {
+  table-layout: fixed;
+  font-size: 120px;
+}
+
+.noughtsandcrosses-grid td {
+  width: 180px;
+  height: 180px;
+  text-align: center;
+  vertical-align: center;
+}
+
+.noughtsandcrosses-grid td.bordered-bottom {
+  border-bottom: 2px solid;
+}
+
+.noughtsandcrosses-grid td.bordered-right {
+  border-right: 2px solid;
+}
+"""

@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
+
+from core import loader, runner
 
 from .models import Bot, Game
 from .tournament import (
@@ -71,5 +74,16 @@ def bot_head_to_head(request, bot_id, other_bot_id):
 def game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
-    ctx = {"game": game, "bot1": game.bot1, "bot2": game.bot2}
+    game_mod = loader.load_module_from_path(settings.BOTANY_GAME_MODULE)
+    boards = runner.rerun_game(game_mod, game.move_list())
+
+    rendered_boards = [game_mod.render_html(board) for board in boards]
+
+    ctx = {
+        "game": game,
+        "bot1": game.bot1,
+        "bot2": game.bot2,
+        "boards": rendered_boards,
+        "styles": game_mod.html_styles,
+    }
     return render(request, "botany/game.html", ctx)
