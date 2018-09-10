@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         with transaction.atomic():
             with override_settings(USE_QUEUES=False):
-                bots = [factories.create_bot(is_public=True) for ix in range(20)]
+                bots = [factories.create_bot() for ix in range(20)]
 
             for bot1 in bots:
                 for bot2 in bots:

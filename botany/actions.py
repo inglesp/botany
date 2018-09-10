@@ -16,18 +16,10 @@ def deactivate_user(user):
     user.bots.update(is_active=False)
 
 
-def create_bot(user, name, code, is_public):
-    bot = Bot.objects.create(user=user, name=name, code=code, is_public=is_public)
+def create_bot(user, name, code):
+    bot = Bot.objects.create(user=user, name=name, code=code)
     set_bot_active(bot)
     return bot
-
-
-def set_bot_public(bot):
-    bot.set_public()
-
-
-def set_bot_not_public(bot):
-    bot.set_not_public()
 
 
 def set_bot_active(bot):

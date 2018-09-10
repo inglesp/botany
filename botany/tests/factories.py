@@ -23,7 +23,7 @@ def create_user(email_addr=None, name=None, num_bots=0):
     return user
 
 
-def create_bot(user=None, name=None, code=None, is_public=False):
+def create_bot(user=None, name=None, code=None):
     global bot_ix
     bot_ix += 1
 
@@ -31,7 +31,7 @@ def create_bot(user=None, name=None, code=None, is_public=False):
     name = name or f"bot-{bot_ix}"
     code = code or bot_code("randobot")
 
-    return actions.create_bot(user, name, code, is_public)
+    return actions.create_bot(user, name, code)
 
 
 @lru_cache()

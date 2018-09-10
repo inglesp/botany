@@ -30,51 +30,17 @@ class DeactivateUserTests(TestCase):
 
 
 class CreateBotTests(TestCase):
-    def test_create_bot_public(self):
+    def test_create_bot(self):
         user = factories.create_user()
         code = factories.bot_code("randobot")
 
-        bot = actions.create_bot(user, "randobot", code, True)
+        bot = actions.create_bot(user, "randobot", code)
 
         self.assertEqual(bot.user, user)
         self.assertEqual(bot.name, "randobot")
         self.assertEqual(bot.code, code)
-        self.assertTrue(bot.is_public)
         self.assertTrue(bot.is_active)
         self.assertEqual(user.active_bot, bot)
-
-    def test_create_bot_not_public(self):
-        user = factories.create_user()
-        code = factories.bot_code("randobot")
-
-        bot = actions.create_bot(user, "randobot", code, False)
-
-        self.assertEqual(bot.user, user)
-        self.assertEqual(bot.name, "randobot")
-        self.assertEqual(bot.code, code)
-        self.assertFalse(bot.is_public)
-        self.assertTrue(bot.is_active)
-        self.assertEqual(user.active_bot, bot)
-
-
-class SetBotPublicTests(TestCase):
-    def test_set_bot_public(self):
-        bot = factories.create_bot()
-        self.assertFalse(bot.is_public)
-
-        actions.set_bot_public(bot)
-
-        self.assertTrue(bot.is_public)
-
-
-class SetBotNotPublicTests(TestCase):
-    def test_set_bot_public(self):
-        bot = factories.create_bot(is_public=True)
-        self.assertTrue(bot.is_public)
-
-        actions.set_bot_not_public(bot)
-
-        self.assertFalse(bot.is_public)
 
 
 class SetBotActiveTests(TestCase):

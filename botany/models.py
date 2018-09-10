@@ -47,7 +47,6 @@ class Bot(AbastractBotanyModel):
     user = models.ForeignKey(User, related_name="bots", on_delete=models.CASCADE)
     name = models.CharField(max_length=32)
     code = models.TextField()
-    is_public = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
 
     objects = managers.BotManager()
@@ -59,14 +58,6 @@ class Bot(AbastractBotanyModel):
         self._num_draws = None
         self._num_losses = None
         super().__init__(*args, **kwargs)
-
-    def set_public(self):
-        self.is_public = True
-        self.save()
-
-    def set_not_public(self):
-        self.is_public = False
-        self.save()
 
     def set_active(self):
         self.user.bots.update(is_active=False)
