@@ -14,7 +14,7 @@ django-dotenv==1.4.2
 django-rq==1.2.0
 django==2.1
 flake8==3.5.0
-hypothesis==3.69.11
+hypothesis==3.71.3
 isort==4.3.4
 mccabe==0.6.1             # via flake8
 psycopg2-binary==2.7.5
