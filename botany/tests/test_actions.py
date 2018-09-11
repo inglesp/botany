@@ -27,6 +27,20 @@ class DeactivateUserTests(TestCase):
 
         self.assertFalse(user.is_active)
         self.assertIsNone(user.active_bot)
+        for bot in user.bots.all():
+            self.assertFalse(bot.is_active)
+
+
+class CreateHouseBotTests(TestCase):
+    def test_create_house_bot(self):
+        code = factories.bot_code("randobot")
+
+        bot = actions.create_house_bot("randobot", code)
+
+        self.assertEqual(bot.user, None)
+        self.assertEqual(bot.name, "randobot")
+        self.assertEqual(bot.code, code)
+        self.assertTrue(bot.is_house_bot)
 
 
 class CreateBotTests(TestCase):
@@ -39,14 +53,14 @@ class CreateBotTests(TestCase):
         self.assertEqual(bot.user, user)
         self.assertEqual(bot.name, "randobot")
         self.assertEqual(bot.code, code)
-        self.assertTrue(bot.is_active)
+        self.assertTrue(bot.is_under_probation)
         self.assertEqual(user.active_bot, bot)
 
 
 class SetBotActiveTests(TestCase):
     def test_set_bot_active(self):
         user = factories.create_user(num_bots=2)
-        bot1, bot2 = user.bots.all()
+        bot1, bot2 = user.bots.order_by("id")
         self.assertFalse(bot1.is_active)
         self.assertTrue(bot2.is_active)
 
@@ -57,6 +71,30 @@ class SetBotActiveTests(TestCase):
 
         self.assertTrue(bot1.is_active)
         self.assertFalse(bot2.is_active)
+
+
+class MarkBotAsFailedTests(TestCase):
+    def test_mark_bot_as_failed(self):
+        bot = factories.create_bot(state="probation")
+
+        actions.mark_bot_failed(bot)
+
+        bot.refresh_from_db()
+
+        self.assertTrue(bot.is_failed)
+
+
+@override_settings(USE_QUEUES=True)
+class ScheduleGamesAgainstHouseBotsTests(TestCase):
+    def test_schedule_games_against_house_bots(self):
+        bot = factories.create_bot(state="probation")
+
+        scheduler.clear_queues()
+
+        actions.schedule_games_against_house_bots(bot)
+
+        queue = scheduler.get_house_queue()
+        self.assertEqual(len(queue.jobs), 1)
 
 
 @override_settings(USE_QUEUES=True)
@@ -104,13 +142,51 @@ class ScheduleAllUnplayedGamesTests(TestCase):
         self.assertEqual(num_jobs_per_queue, expected_num_jobs_per_queue)
 
 
+class PlayGamesAgainstHouseBotsTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        factories.create_house_bot()
+        factories.create_house_bot()
+
+    def test_play_games_against_house_bots_with_good_bot(self):
+        code = factories.bot_code("randobot")
+        bot = factories.create_bot(code=code, state="probation")
+
+        actions.play_games_against_house_bots(bot.id)
+
+        bot.refresh_from_db()
+
+        self.assertEqual(models.Game.objects.count(), 20)
+        self.assertTrue(bot.is_active)
+
+    def test_play_games_against_house_bots_with_bad_bot(self):
+        code = factories.bot_code("invalid_when_playing_second")
+        bot = factories.create_bot(code=code, state="probation")
+
+        actions.play_games_against_house_bots(bot.id)
+
+        bot.refresh_from_db()
+
+        self.assertEqual(models.Game.objects.count(), 2)
+        self.assertTrue(bot.is_failed)
+
+
+class PlayGameAndReportResultTests(TestCase):
+    def test_play_game_and_report_results(self):
+        bot1, bot2 = [factories.create_bot() for _ in range(2)]
+
+        actions.play_game_and_report_result(bot1.id, bot2.id)
+
+        models.Game.objects.get(bot1_id=bot1.id, bot2_id=bot2.id)
+
+
 class PlayGameTests(TestCase):
     def test_play_game(self):
         bot1, bot2 = [factories.create_bot() for _ in range(2)]
 
-        actions.play_game(bot1.id, bot2.id)
+        result = actions.play_game(bot1.id, bot2.id)
 
-        models.Game.objects.get(bot1_id=bot1.id, bot2_id=bot2.id)
+        self.assertEqual(result.result_type, ResultType.COMPLETE)
 
 
 class ReportResultTest(TestCase):

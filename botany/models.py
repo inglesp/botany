@@ -38,16 +38,23 @@ class User(AbstractBaseUser, PermissionsMixin, AbastractBotanyModel):
     @property
     def active_bot(self):
         try:
-            return self.bots.get(is_active=True)
+            return self.bots.get(state__in=["active", "probation"])
         except Bot.DoesNotExist:
             return None
 
 
 class Bot(AbastractBotanyModel):
-    user = models.ForeignKey(User, related_name="bots", on_delete=models.CASCADE)
+    STATES = [
+        (state, state)
+        for state in ["house", "probation", "failed", "active", "inactive"]
+    ]
+
+    user = models.ForeignKey(
+        User, related_name="bots", on_delete=models.CASCADE, null=True
+    )
     name = models.CharField(max_length=32)
     code = models.TextField()
-    is_active = models.BooleanField(default=False)
+    state = models.CharField(max_length=10, choices=STATES)
 
     objects = managers.BotManager()
 
@@ -60,9 +67,33 @@ class Bot(AbastractBotanyModel):
         super().__init__(*args, **kwargs)
 
     def set_active(self):
-        self.user.bots.update(is_active=False)
-        self.is_active = True
+        self.user.bots.update(state="inactive")
+        self.state = "active"
         self.save()
+
+    def set_failed(self):
+        self.state = "failed"
+        self.save()
+
+    @property
+    def is_house_bot(self):
+        return self.state == "house"
+
+    @property
+    def is_under_probation(self):
+        return self.state == "probation"
+
+    @property
+    def is_failed(self):
+        return self.state == "failed"
+
+    @property
+    def is_active(self):
+        return self.state == "active"
+
+    @property
+    def is_inactive(self):
+        return self.state == "inactive"
 
     @property
     def score(self):

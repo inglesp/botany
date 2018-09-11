@@ -25,6 +25,10 @@ class Result:
     move_list = attr.ib()
     traceback = attr.ib()
 
+    @property
+    def is_complete(self):
+        return self.result_type == ResultType.COMPLETE
+
 
 def rerun_game(game, move_list):
     boards = [game.new_board()]

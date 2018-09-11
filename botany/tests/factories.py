@@ -23,7 +23,17 @@ def create_user(email_addr=None, name=None, num_bots=0):
     return user
 
 
-def create_bot(user=None, name=None, code=None):
+def create_house_bot(name=None, code=None):
+    global bot_ix
+    bot_ix += 1
+
+    name = name or f"bot-{bot_ix}"
+    code = code or bot_code("randobot")
+
+    return actions.create_house_bot(name, code)
+
+
+def create_bot(user=None, name=None, code=None, state="active"):
     global bot_ix
     bot_ix += 1
 
@@ -31,7 +41,16 @@ def create_bot(user=None, name=None, code=None):
     name = name or f"bot-{bot_ix}"
     code = code or bot_code("randobot")
 
-    return actions.create_bot(user, name, code)
+    bot = actions.create_bot(user, name, code)
+
+    if state == "probation":
+        pass
+    elif state == "active":
+        actions.set_bot_active(bot)
+    else:
+        assert False
+
+    return bot
 
 
 @lru_cache()

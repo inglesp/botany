@@ -4,6 +4,12 @@ from django.conf import settings
 from . import actions
 
 
+def schedule_games_against_house_bots(bot):
+    if settings.USE_QUEUES:
+        queue = django_rq.get_queue("house")
+        queue.enqueue(actions.play_games_against_house_bots, bot.id)
+
+
 def schedule_games(unplayed_games):
     """Schedule unplayed games.
 
@@ -24,7 +30,11 @@ def schedule_games(unplayed_games):
 
             if settings.USE_QUEUES:
                 queue = django_rq.get_queue(queue_name)
-                queue.enqueue(actions.play_game, bot1_id, bot2_id)
+                queue.enqueue(actions.play_game_and_report_result, bot1_id, bot2_id)
+
+
+def get_house_queue():
+    return django_rq.get_queue("house")
 
 
 def get_queue_by_ix(ix):
@@ -32,7 +42,6 @@ def get_queue_by_ix(ix):
 
 
 def clear_queues():
-    for ix in range(settings.BOTANY_NUM_ROUNDS):
-        queue_name = settings.QUEUE_NAMES[ix]
+    for queue_name in settings.RQ_QUEUES:
         queue = django_rq.get_queue(queue_name)
         queue.empty()

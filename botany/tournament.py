@@ -145,7 +145,7 @@ def standings():
     sql = """
 WITH active_bots AS (
     SELECT * FROM botany_bot
-    WHERE is_active
+    WHERE state = 'active'
 ),
 
 annotated_games AS (
@@ -238,7 +238,7 @@ def standings_against_bot(bot):
     sql = """
 WITH active_bots AS (
     SELECT * FROM botany_bot
-    WHERE is_active
+    WHERE state = 'active'
 ),
 
 annotated_games AS (

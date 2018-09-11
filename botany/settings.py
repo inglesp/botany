@@ -94,6 +94,7 @@ QUEUE_NAMES = [f"queue_{ix}" for ix in range(BOTANY_NUM_ROUNDS)]
 QUEUE_CONFIG = {"HOST": "localhost", "PORT": 6379, "DB": 0}
 
 RQ_QUEUES = {name: QUEUE_CONFIG for name in QUEUE_NAMES}
+RQ_QUEUES["house"] = QUEUE_CONFIG
 
 
 # Password validation
