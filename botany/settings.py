@@ -101,7 +101,7 @@ DATABASES = {"default": dj_database_url.config(default="postgres://localhost/bot
 
 USE_QUEUES = not bool(os.getenv("DONT_USE_QUEUES"))
 
-QUEUE_CONFIG = {"HOST": "localhost", "PORT": 6379, "DB": 0}
+QUEUE_CONFIG = {"URL": os.environ["REDIS_URL"]}
 
 RQ_QUEUES = {"house": QUEUE_CONFIG, "main": QUEUE_CONFIG}
 
