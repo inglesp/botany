@@ -26,7 +26,7 @@ def create_house_bot(name, code):
 
 
 def create_bot(user, name, code):
-    # TODO make name optional
+    # TODO add suffix to name
     bot = Bot.objects.create(user=user, name=name, code=code, state="probation")
     schedule_games_against_house_bots(bot)
     return bot
@@ -86,7 +86,7 @@ def play_game_and_report_result(bot1_id, bot2_id):
 def play_game(bot1_id, bot2_id):
     # TODO: check whether there have been enough reported games between bots
     # TODO: run game in subprocess and ensure environment variables are not accessible
-    game = loader.load_module_from_path(settings.BOTANY_GAME_MODULE)
+    game = loader.load_module_from_dotted_path(settings.BOTANY_GAME_MODULE)
 
     bot1 = Bot.objects.get(id=bot1_id)
     bot2 = Bot.objects.get(id=bot2_id)

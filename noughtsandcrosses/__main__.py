@@ -31,20 +31,9 @@ def play_game(fn1, fn2):
             return
 
 
-def render(board):
-    s = """
-{} | {} | {}
---+---+---
-{} | {} | {}
---+---+---
-{} | {} | {}
-    """.strip()
-    return s.format(*board)
-
-
 def display(board):
     print()
-    print(render(board))
+    print(game.render_text(board))
     print()
 
 

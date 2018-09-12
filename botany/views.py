@@ -1,11 +1,14 @@
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from core import loader, runner
 
-from .actions import create_user
+from .actions import create_bot, create_user
 from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
@@ -77,7 +80,7 @@ def bot_head_to_head(request, bot_id, other_bot_id):
 def game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
-    game_mod = loader.load_module_from_path(settings.BOTANY_GAME_MODULE)
+    game_mod = loader.load_module_from_dotted_path(settings.BOTANY_GAME_MODULE)
     boards = runner.rerun_game(game_mod, game.move_list())
 
     rendered_boards = [game_mod.render_html(board) for board in boards]
@@ -128,3 +131,18 @@ def token(request):
     else:
         url = f"{reverse('prelogin')}?next={request.path}"
         return redirect(url)
+
+
+def api_setup(request):
+    data = {
+        "botany_game_module": settings.BOTANY_GAME_MODULE,
+        "botany_num_rounds": settings.BOTANY_NUM_ROUNDS,
+    }
+    return JsonResponse(data)
+
+
+@csrf_exempt
+def api_submit(request):
+    user = get_object_or_404(User, api_token=request.POST["api_token"])
+    create_bot(user, request.POST["bot_name"], request.POST["bot_code"])
+    return JsonResponse({})

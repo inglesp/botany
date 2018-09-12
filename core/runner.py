@@ -43,7 +43,7 @@ def rerun_game(game, move_list):
     return boards
 
 
-def run_game(game, fn1, fn2, opcode_limit=None):
+def run_game(game, fn1, fn2, opcode_limit=None, display_board=False):
     def build_result(result_type, score, traceback=None):
         return Result(
             result_type=result_type,
@@ -61,6 +61,9 @@ def run_game(game, fn1, fn2, opcode_limit=None):
     losing_scores = [-1, 1]
     board = game.new_board()
     move_list = []
+
+    if display_board:
+        print(game.render_text(board))
 
     for player_ix in itertools.cycle([0, 1]):
         token = game.TOKENS[player_ix]
@@ -108,6 +111,9 @@ def run_game(game, fn1, fn2, opcode_limit=None):
         move_list.append(move)
 
         game.make_move(board, move, token)
+
+        if display_board:
+            print(game.render_text(board))
 
         winner = game.check_winner(board)
         if winner is not None:

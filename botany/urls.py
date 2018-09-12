@@ -19,6 +19,8 @@ urlpatterns = [
     path("login/<signed_data>/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("token/", views.token, name="token"),
+    path("api/setup/", views.api_setup, name="api_setup"),
+    path("api/submit/", views.api_submit, name="api_submit"),
 ]
 
 

@@ -90,3 +90,14 @@ html_styles = """
   border-right: 2px solid;
 }
 """
+
+
+def render_text(board):
+    s = """
+{} | {} | {}
+--+---+---
+{} | {} | {}
+--+---+---
+{} | {} | {}
+"""
+    return s.format(*board)

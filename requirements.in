@@ -11,3 +11,8 @@ coverage
 flake8
 hypothesis
 isort
+
+# Client
+# TODO: move these to setup.py
+click
+requests
