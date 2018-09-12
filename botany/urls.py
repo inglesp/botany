@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import path
 
 from . import views
@@ -14,4 +15,13 @@ urlpatterns = [
         name="bot_head_to_head",
     ),
     path("games/<game_id>/", views.game, name="game"),
+    path("login/", views.prelogin, name="prelogin"),
+    path("login/<signed_data>/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
 ]
+
+
+if settings.USE_FAKE_AUTH:
+    from fakeauth.views import authorize
+
+    urlpatterns.append(path("fakeauth/authorize/", authorize))

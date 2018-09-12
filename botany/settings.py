@@ -35,6 +35,13 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+AUTH_LOGIN_URL = os.environ["AUTH_LOGIN_URL"]
+AUTH_SECRET_KEY = os.environ["AUTH_SECRET_KEY"]
+AUTH_MAX_AGE = 10
+
+USE_FAKE_AUTH = bool(os.getenv("USE_FAKE_AUTH"))
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,6 +54,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
+
+if USE_FAKE_AUTH:
+    INSTALLED_APPS.append("fakeauth")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

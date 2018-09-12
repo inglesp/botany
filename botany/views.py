@@ -1,9 +1,12 @@
 from django.conf import settings
-from django.shortcuts import get_object_or_404, render
+from django.contrib.auth import login, logout
+from django.core import signing
+from django.shortcuts import get_object_or_404, redirect, render
 
 from core import loader, runner
 
-from .models import Bot, Game
+from .actions import create_user
+from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
     all_games_between_bots,
@@ -87,3 +90,32 @@ def game(request, game_id):
         "styles": game_mod.html_styles,
     }
     return render(request, "botany/game.html", ctx)
+
+
+def prelogin(request):
+    return redirect(settings.AUTH_LOGIN_URL)
+
+
+def login_view(request, signed_data):
+    data = signing.loads(
+        signed_data, key=settings.AUTH_SECRET_KEY, max_age=settings.AUTH_MAX_AGE
+    )
+    email_addr = data["email_addr"]
+    name = data["name"]
+
+    try:
+        user = User.objects.get(email_addr=email_addr)
+        print("got user")
+    except User.DoesNotExist:
+        user = create_user(email_addr, name)
+        print("created user")
+
+    login(request, user)
+
+    return redirect(request.GET.get("next", "/"))
+
+
+def logout_view(request):
+    logout(request)
+
+    return redirect("/")
