@@ -32,7 +32,7 @@ SECRET_KEY = "wntncqjx!9!4p0)osnzvdu)@wf(mg-!tj9brm=6tuk32kg+6_3"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 AUTH_LOGIN_URL = os.environ["AUTH_LOGIN_URL"]
