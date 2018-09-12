@@ -16,6 +16,7 @@ django-dotenv==1.4.2
 django-rq==1.2.0
 django==2.1
 flake8==3.5.0
+gunicorn==19.9.0
 hypothesis==3.71.3
 idna==2.7                 # via requests
 isort==4.3.4
@@ -29,3 +30,4 @@ requests==2.19.1
 rq==0.12.0                # via django-rq
 toml==0.9.4               # via black
 urllib3==1.23             # via requests
+whitenoise==4.1

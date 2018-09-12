@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.test import TestCase, override_settings
 
 from botany import actions, models, scheduler
@@ -109,13 +108,8 @@ class ScheduleUnplayedGamesForBotTests(TestCase):
 
         actions.schedule_unplayed_games_for_bot(bot1)
 
-        expected_num_jobs_per_queue = [2, 2, 2, 1, 0]
-        num_jobs_per_queue = [
-            len(scheduler.get_queue_by_ix(ix).jobs)
-            for ix in range(settings.BOTANY_NUM_ROUNDS)
-        ]
-
-        self.assertEqual(num_jobs_per_queue, expected_num_jobs_per_queue)
+        queue = scheduler.get_main_queue()
+        self.assertEqual(len(queue.jobs), 7)
 
 
 @override_settings(USE_QUEUES=True)
@@ -133,13 +127,8 @@ class ScheduleAllUnplayedGamesTests(TestCase):
 
         actions.schedule_all_unplayed_games()
 
-        expected_num_jobs_per_queue = [6, 6, 6, 4, 2]
-        num_jobs_per_queue = [
-            len(scheduler.get_queue_by_ix(ix).jobs)
-            for ix in range(settings.BOTANY_NUM_ROUNDS)
-        ]
-
-        self.assertEqual(num_jobs_per_queue, expected_num_jobs_per_queue)
+        queue = scheduler.get_main_queue()
+        self.assertEqual(len(queue.jobs), 24)
 
 
 class PlayGamesAgainstHouseBotsTests(TestCase):

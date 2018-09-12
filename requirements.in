@@ -3,7 +3,9 @@ dj-database-url
 django
 django-dotenv
 django-rq
+gunicorn
 psycopg2-binary
+whitenoise
 
 # Development
 black

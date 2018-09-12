@@ -60,6 +60,7 @@ if USE_FAKE_AUTH:
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -100,11 +101,9 @@ DATABASES = {"default": dj_database_url.config(default="postgres://localhost/bot
 
 USE_QUEUES = not bool(os.getenv("DONT_USE_QUEUES"))
 
-QUEUE_NAMES = [f"queue_{ix}" for ix in range(BOTANY_NUM_ROUNDS)]
 QUEUE_CONFIG = {"HOST": "localhost", "PORT": 6379, "DB": 0}
 
-RQ_QUEUES = {name: QUEUE_CONFIG for name in QUEUE_NAMES}
-RQ_QUEUES["house"] = QUEUE_CONFIG
+RQ_QUEUES = {"house": QUEUE_CONFIG, "main": QUEUE_CONFIG}
 
 
 # Password validation
