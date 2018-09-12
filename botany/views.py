@@ -93,7 +93,10 @@ def game(request, game_id):
 
 
 def prelogin(request):
-    return redirect(settings.AUTH_LOGIN_URL)
+    url = settings.AUTH_LOGIN_URL
+    if "next" in request.GET:
+        url += f"?next={request.GET['next']}"
+    return redirect(url)
 
 
 def login_view(request, signed_data):
@@ -117,3 +120,11 @@ def logout_view(request):
     logout(request)
 
     return redirect("/")
+
+
+def token(request):
+    if request.user.is_authenticated:
+        return render(request, "botany/token.html")
+    else:
+        url = f"{reverse('prelogin')}?next={request.path}"
+        return redirect(url)

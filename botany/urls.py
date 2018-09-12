@@ -18,6 +18,7 @@ urlpatterns = [
     path("login/", views.prelogin, name="prelogin"),
     path("login/<signed_data>/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
+    path("token/", views.token, name="token"),
 ]
 
 
