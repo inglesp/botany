@@ -105,10 +105,8 @@ def login_view(request, signed_data):
 
     try:
         user = User.objects.get(email_addr=email_addr)
-        print("got user")
     except User.DoesNotExist:
         user = create_user(email_addr, name)
-        print("created user")
 
     login(request, user)
 
