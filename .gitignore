@@ -2,6 +2,8 @@
 .coverage
 .env
 .hypothesis
+build
 db.sqlite3
+dist
 htmlcov
 tmp
