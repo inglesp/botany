@@ -1,4 +1,4 @@
-# This is an example game module, also used in tests.
+# This is an example game module, also used in botany tests.
 
 TOKENS = ["X", "O"]
 EMPTY = "."

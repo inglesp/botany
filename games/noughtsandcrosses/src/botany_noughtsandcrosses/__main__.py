@@ -1,14 +1,14 @@
-# This exercises noughtsandcrosses.game and allows a human to play X against a
-# random O.
+# This exercises botany_noughtsandcrosses.game and allows a human to play X
+# against a random O.
 #
 # Usage:
 #
-# $ python -m noughtsandcrosses
+# $ python -m botany_noughtsandcrosses
 
 import itertools
 import random
 
-from noughtsandcrosses import game
+from botany_noughtsandcrosses import game
 
 
 def play_game(fn1, fn2):
@@ -21,7 +21,7 @@ def play_game(fn1, fn2):
             announce_draw()
             return
 
-        pos = fn(available_moves)
+        pos = fn(board)
         game.make_move(board, pos, token)
         display(board)
 
