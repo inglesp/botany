@@ -2,7 +2,7 @@ import os.path as op
 from functools import lru_cache
 
 from botany import actions
-from core.runner import Result, ResultType
+from botany_core.runner import Result, ResultType
 
 user_ix = 0
 bot_ix = 0

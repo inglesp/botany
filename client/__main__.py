@@ -3,7 +3,7 @@ import os
 import click
 import requests
 
-from core import loader, runner
+from botany_core import loader, runner
 
 SETTINGS_TPL = """
 # TODO Comment this

@@ -1,4 +1,3 @@
-attrs
 dj-database-url
 django
 django-dotenv
@@ -9,6 +8,7 @@ whitenoise
 
 # Development
 black
+bumpversion
 coverage
 flake8
 hypothesis

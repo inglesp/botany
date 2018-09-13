@@ -1,7 +1,7 @@
 from django.test import TestCase, override_settings
 
 from botany import actions, models, scheduler
-from core.runner import Result, ResultType
+from botany_core.runner import Result, ResultType
 
 from . import factories
 

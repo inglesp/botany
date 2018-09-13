@@ -4,8 +4,8 @@
 import itertools
 from unittest import TestCase
 
-from core import tracer
-from core.runner import Result, ResultType, rerun_game, run_game
+from botany_core import tracer
+from botany_core.runner import Result, ResultType, rerun_game, run_game
 from noughtsandcrosses import game
 
 

@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from core import loader, runner
+from botany_core import loader, runner
 
 from .actions import create_bot, create_user
 from .models import Bot, Game, User
