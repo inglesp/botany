@@ -6,12 +6,3 @@ django-rq
 gunicorn
 psycopg2-binary
 whitenoise
-
-# Development
-black
-botany-noughtsandcrosses
-bumpversion
-coverage
-flake8
-hypothesis
-isort
