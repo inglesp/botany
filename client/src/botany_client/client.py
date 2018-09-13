@@ -128,7 +128,3 @@ def play(path1, path2, opcode_limit):
 def tournament(path1, path2, pathn, num_rounds, opcode_limit):
     # TODO
     assert False
-
-
-if __name__ == "__main__":
-    cli()
