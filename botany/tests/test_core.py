@@ -6,6 +6,7 @@ from unittest import TestCase
 
 from botany_core import tracer
 from botany_core.runner import Result, ResultType, rerun_game, run_game
+
 from noughtsandcrosses import game
 
 

@@ -1,3 +1,4 @@
+from botany_core import loader, runner
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
@@ -5,8 +6,6 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-
-from botany_core import loader, runner
 
 from .actions import create_bot, create_user
 from .models import Bot, Game, User

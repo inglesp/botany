@@ -1,6 +1,5 @@
-from django.conf import settings
-
 from botany_core import loader, runner
+from django.conf import settings
 
 from . import scheduler
 from .models import Bot, Game, User
