@@ -1,18 +1,9 @@
-# TODO port to use Click
 import os
-import sys
 
+import click
 import requests
 
 from core import loader, runner
-
-USAGE = """
-python -m botany init HOST
-python -m botany submit PATH
-python -m botany play [PATH,human] [PATH,human]
-python -m botany tournament PATH PATH ...
-""".strip()
-
 
 SETTINGS_TPL = """
 # TODO Comment this
@@ -24,46 +15,13 @@ NUM_ROUNDS = {botany_num_rounds}
 """.lstrip()
 
 
-def print_usage_and_quit():
-    print(USAGE)
-    sys.exit(1)
+@click.group()
+def cli():
+    """botany"""
 
 
-def main(args):
-    if not args:
-        print_usage_and_quit()
-
-    elif args[0] in ["help", "--help"]:
-        print_usage_and_quit()
-
-    elif args[0] == "init":
-        if len(args) == 2:
-            init(args[1])
-        else:
-            print_usage_and_quit()
-
-    elif args[0] == "submit":
-        if len(args) == 2:
-            submit(args[1])
-        else:
-            print_usage_and_quit()
-
-    elif args[0] == "play":
-        if len(args) == 3:
-            play(*args[1:])
-        else:
-            print_usage_and_quit()
-
-    elif args[0] == "tournament":
-        if len(args) >= 3:
-            tournament(*args[1:])
-        else:
-            print_usage_and_quit()
-
-    else:
-        print_usage_and_quit()
-
-
+@cli.command(short_help="Initialise current directory")
+@click.argument("host")
 def init(host):
     if host[-1] == "/":
         host = host[:-1]
@@ -85,6 +43,8 @@ def init(host):
         f.write(SETTINGS_TPL.format(**data))
 
 
+@cli.command(short_help="Submit bot code")
+@click.argument("path")
 def submit(path):
     import settings
 
@@ -98,7 +58,11 @@ def submit(path):
     rsp.raise_for_status()
 
 
-def play(path1, path2):
+@cli.command(short_help="Play game between bots and/or humans")
+@click.argument("path1")
+@click.argument("path2")
+@click.option("--opcode-limit", type=int, default=None)
+def play(path1, path2, opcode_limit):
     import settings
 
     game = loader.load_module_from_dotted_path(settings.GAME_MODULE)
@@ -156,10 +120,16 @@ def play(path1, path2):
         print(result.traceback)
 
 
-def tournament(*paths):
+@cli.command(short_help="Run tournament between several bots")
+@click.argument("path1")
+@click.argument("path2")
+@click.argument("pathn", nargs=-1)
+@click.option("--num-rounds", type=int, default=None)
+@click.option("--opcode-limit", type=int, default=None)
+def tournament(path1, path2, pathn, num_rounds, opcode_limit):
     # TODO
     assert False
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    cli()
