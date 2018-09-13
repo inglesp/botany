@@ -5,9 +5,10 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 appdirs==1.4.3            # via black
-attrs==18.1.0             # via black, botany-core, hypothesis
+attrs==18.1.0             # via black, botany-core, botany-noughtsandcrosses, hypothesis
 black==18.6b4
 botany-core==0.1.0
+botany-noughtsandcrosses==0.1.0
 bumpversion==0.5.3
 click==6.7                # via black, rq
 coverage==4.5.1

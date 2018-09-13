@@ -1,8 +1,9 @@
 import os
 
 import click
-import requests
 from botany_core import loader, runner
+
+import requests
 
 SETTINGS_TPL = """
 # TODO Comment this

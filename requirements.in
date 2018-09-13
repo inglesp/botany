@@ -9,6 +9,7 @@ whitenoise
 
 # Development
 black
+botany-noughtsandcrosses
 bumpversion
 coverage
 flake8

@@ -1,6 +1,6 @@
 import random
 
-from noughtsandcrosses import game
+from botany_noughtsandcrosses import game
 
 
 def get_next_move(board, token):
