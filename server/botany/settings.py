@@ -16,6 +16,7 @@ import dj_database_url
 
 # Game settings
 BOTANY_GAME_MODULE = os.environ["BOTANY_GAME_MODULE"]
+BOTANY_GAME_PACKAGE = os.environ["BOTANY_GAME_PACKAGE"]
 BOTANY_NUM_ROUNDS = int(os.environ["BOTANY_NUM_ROUNDS"])
 BOTANY_OPCODE_LIMIT = int(os.environ["BOTANY_OPCODE_LIMIT"])
 

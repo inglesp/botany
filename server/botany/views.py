@@ -136,6 +136,7 @@ def token(request):
 def api_setup(request):
     data = {
         "botany_game_module": settings.BOTANY_GAME_MODULE,
+        "botany_game_package": settings.BOTANY_GAME_PACKAGE,
         "botany_num_rounds": settings.BOTANY_NUM_ROUNDS,
         "botany_opcode_limit": settings.BOTANY_OPCODE_LIMIT,
     }
