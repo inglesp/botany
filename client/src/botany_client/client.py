@@ -121,8 +121,141 @@ def play(path1, path2, opcode_limit):
 @click.argument("path1")
 @click.argument("path2")
 @click.argument("pathn", nargs=-1)
+@click.option("--full-output", is_flag=True)
 @click.option("--num-rounds", type=int, default=None)
 @click.option("--opcode-limit", type=int, default=None)
-def tournament(path1, path2, pathn, num_rounds, opcode_limit):
-    # TODO
-    assert False
+def tournament(path1, path2, pathn, full_output, num_rounds, opcode_limit):
+    settings = utils.load_settings()
+    game = utils.load_game()
+
+    paths = [path1, path2] + list(pathn)
+    bots = []
+
+    for path in paths:
+        mod = loader.load_module_from_filesystem_path("mod", path)
+        bots.append(
+            {
+                "path": path,
+                "fn": mod.get_next_move,
+                "num_played": 0,
+                "num_wins": 0,
+                "num_draws": 0,
+                "num_losses": 0,
+                "score": 0,
+            }
+        )
+
+    if num_rounds is None:
+        num_rounds = settings["botany_num_rounds"]
+
+    for bot1 in bots:
+        for bot2 in bots:
+            if bot1 == bot2:
+                continue
+
+            if full_output:
+                print(f"{bot1['path']} vs {bot2['path']}")
+
+            for ix in range(num_rounds):
+                result = runner.run_game(game, bot1["fn"], bot2["fn"])
+
+                bot1["num_played"] += 1
+                bot2["num_played"] += 1
+
+                if result.score == 1:
+                    bot1["num_wins"] += 1
+                    bot1["score"] += 1
+                    bot2["num_losses"] += 1
+                    bot2["score"] -= 1
+
+                    winning_bot = "bot1"
+                    losing_bot = "bot2"
+
+                elif result.score == 0:
+                    bot1["num_draws"] += 1
+                    bot2["num_draws"] += 1
+
+                    winning_bot = None
+                    losing_bot = None
+
+                elif result.score == -1:
+                    bot1["num_losses"] += 1
+                    bot1["score"] -= 1
+                    bot2["num_wins"] += 1
+                    bot2["score"] += 1
+
+                    winning_bot = "bot2"
+                    losing_bot = "bot1"
+
+                else:
+                    assert False
+
+                if winning_bot is None:
+                    result_summary = "game drawn"
+                else:
+                    result_summary = f"{winning_bot} wins"
+
+                if result.result_type == runner.ResultType.INVALID_MOVE:
+                    result_extra = f"{losing_bot} made an invalid move"
+                elif result.result_type == runner.ResultType.EXCEPTION:
+                    result_extra = f"{losing_bot} raised an exception"
+                elif result.result_type == runner.ResultType.TIMEOUT:
+                    result_extra = f"{losing_bot} exceeded the opcode limit"
+                elif result.result_type == runner.ResultType.INVALID_STATE:
+                    result_extra = f"{losing_bot} returned an invalid state"
+                else:
+                    assert result.result_type == runner.ResultType.COMPLETE
+                    result_extra = None
+
+                if full_output:
+                    items = [
+                        str(ix).rjust(len(str(num_rounds))),
+                        result_summary.ljust(10),
+                        "".join(str(move) for move in result.move_list),
+                    ]
+
+                    if result_extra:
+                        items.append(result_extra)
+
+                    print("  " + " ".join(items))
+
+            if full_output:
+                print()
+
+    if full_output:
+        print()
+
+    max_path_width = max(len(bot["path"]) for bot in bots)
+    max_col_width = len(str(num_rounds * len(bots) * len(bots)))
+
+    def sortkey(bot):
+        return [-bot["score"], bot["num_played"], -bot["num_wins"]]
+
+    bots = sorted(bots, key=sortkey)
+
+    row_items = [
+        "Bot".center(max_path_width),
+        "P".center(max_col_width),
+        "W".center(max_col_width),
+        "D".center(max_col_width),
+        "L".center(max_col_width),
+        "Score",
+    ]
+    header_row = " | ".join(row_items)
+    print(header_row)
+
+    dividing_row = header_row.replace("|", "+")
+    dividing_row = re.sub("[^+]", "-", dividing_row)
+    print(dividing_row)
+
+    for bot in bots:
+        row_items = [
+            bot["path"].ljust(max_path_width),
+            str(bot["num_played"]).rjust(max_col_width),
+            str(bot["num_wins"]).rjust(max_col_width),
+            str(bot["num_draws"]).rjust(max_col_width),
+            str(bot["num_losses"]).rjust(max_col_width),
+            str(bot["score"]).rjust(max_col_width),
+        ]
+
+        print(" | ".join(row_items))
