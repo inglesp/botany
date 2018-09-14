@@ -4,9 +4,10 @@
 import itertools
 from unittest import TestCase
 
-from botany_core import tracer
-from botany_core.runner import Result, ResultType, rerun_game, run_game
 from botany_noughtsandcrosses import game
+
+from botany_core import tracer, verifier
+from botany_core.runner import Result, ResultType, rerun_game, run_game
 
 
 class TracerTests(TestCase):
@@ -38,6 +39,72 @@ class TracerTests(TestCase):
             self.f(10)
 
         self.assertTrue(0 < trace.opcode_count < 100)
+
+
+class VerifierTests(TestCase):
+    def test_valid_code(self):
+        code = """
+# This is a comment
+
+import random
+
+from botany_noughtsandcrosses import game
+
+def get_available_moves(board):
+    return game.available_moves(board)
+
+def get_next_move(board):
+    return random.choice(get_available_moves(board))
+        """
+
+        verifier.verify_bot_code(code)
+
+    def test_code_with_syntax_error(self):
+        code = """
+def get_next_move()
+    pass
+    """
+
+        with self.assertRaisesRegexp(verifier.InvalidBotCode, "contains a SyntaxError"):
+            verifier.verify_bot_code(code)
+
+    def test_code_with_top_level_definition(self):
+        code = """
+x = 123
+
+def get_next_move(board):
+    pass
+        """
+
+        with self.assertRaisesRegexp(verifier.InvalidBotCode, "not an import"):
+            verifier.verify_bot_code(code)
+
+    def test_code_with_get_next_move_missing_required_param(self):
+        code = """
+def get_next_move(token, state):
+    pass
+        """
+
+        with self.assertRaisesRegexp(verifier.InvalidBotCode, "must have either"):
+            verifier.verify_bot_code(code)
+
+    def test_code_with_get_next_move_having_extra_param(self):
+        code = """
+def get_next_move(move_list, beard):
+    pass
+        """
+
+        with self.assertRaisesRegexp(verifier.InvalidBotCode, "may only have"):
+            verifier.verify_bot_code(code)
+
+    def test_code_missing_get_next_move(self):
+        code = """
+def get_move(board):
+    pass
+        """
+
+        with self.assertRaisesRegexp(verifier.InvalidBotCode, "does not define"):
+            verifier.verify_bot_code(code)
 
 
 class RerunGameTests(TestCase):

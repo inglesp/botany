@@ -8,8 +8,6 @@ import attr
 
 from .tracer import OpCodeLimitExceeded, limited_opcodes
 
-VALID_PARAMS = ["board", "move_list", "token", "state"]
-
 
 class ResultType(Enum):
     COMPLETE = auto()  # The game was played to completion
@@ -122,8 +120,4 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False):
 
 
 def get_param_list(fn):
-    # TODO move fn validation elsewhere?
-    param_list = list(inspect.signature(fn).parameters)
-    for param in param_list:
-        assert param in VALID_PARAMS
-    return param_list
+    return list(inspect.signature(fn).parameters)

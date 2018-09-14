@@ -1,8 +1,3 @@
-# TODO:
-#
-# * Validate playing modules
-# * Validate game module
-
 from importlib import import_module
 from types import ModuleType
 
