@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from botany_core import loader, runner
+from botany_core import loader, runner, verifier
 
 from .actions import create_bot, create_user
 from .models import Bot, Game, User
@@ -146,5 +146,13 @@ def api_setup(request):
 @csrf_exempt
 def api_submit(request):
     user = get_object_or_404(User, api_token=request.POST["api_token"])
-    create_bot(user, request.POST["bot_name"], request.POST["bot_code"])
+
+    bot_code = request.POST["bot_code"]
+
+    try:
+        verifier.verify_bot_code(bot_code)
+    except verifier.InvalidBotCode as e:
+        return HttpResponseBadRequest("Bot code not valid")
+
+    create_bot(user, request.POST["bot_name"], bot_code)
     return JsonResponse({})
