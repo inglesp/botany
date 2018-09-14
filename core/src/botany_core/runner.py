@@ -1,5 +1,6 @@
 import inspect
 import itertools
+import json
 import traceback
 from copy import copy, deepcopy
 from enum import Enum, auto
@@ -14,6 +15,7 @@ class ResultType(Enum):
     INVALID_MOVE = auto()  # The losing player made an invalid move
     EXCEPTION = auto()  # The losing player's code raised an exception
     TIMEOUT = auto()  # The losing player's code used too many opcodes
+    INVALID_STATE = auto()  # The losing player's code returned invalid state
 
 
 @attr.s
@@ -104,6 +106,11 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False):
 
         if move not in available_moves:
             return build_result(ResultType.INVALID_MOVE, losing_scores[player_ix])
+
+        try:
+            json.dumps(state)
+        except TypeError:
+            return build_result(ResultType.INVALID_STATE, losing_scores[player_ix])
 
         states[player_ix] = state
         move_list.append(move)

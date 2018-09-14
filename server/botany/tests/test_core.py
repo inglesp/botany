@@ -2,6 +2,7 @@
 # so that they can be easily run by the Django test runner.
 
 import itertools
+import tempfile
 from unittest import TestCase
 
 from botany_noughtsandcrosses import game
@@ -293,6 +294,21 @@ class RunGameTests(TestCase):
 
         self.assertEqual(result, expected_result)
 
+    def test_invalid_state(self):
+        # X | . | .
+        # --|---|--
+        # . | . | .
+        # --|---|--
+        # . | . | .
+
+        result = run_game(game, get_next_move_1, get_next_move_11)
+
+        expected_result = Result(
+            result_type=ResultType.INVALID_STATE, score=1, move_list=[0], traceback=None
+        )
+
+        self.assertEqual(result, expected_result)
+
 
 def get_next_move_1(board):
     """Return first available move."""
@@ -404,3 +420,10 @@ def get_next_move_10(board):
 
     available_moves = game.available_moves(board)
     return available_moves[0]
+
+
+def get_next_move_11(board):
+    """Return invalid state."""
+
+    available_moves = game.available_moves(board)
+    return available_moves[0], tempfile.TemporaryFile()
