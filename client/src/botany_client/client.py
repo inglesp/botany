@@ -29,14 +29,22 @@ def init(host):
     # TODO Check return code
 
     token_url = host + "/token/"
+    print()
     print(f"Visit {token_url} and enter your API token")
+    print()
     api_token = input("> ")
+    print()
 
     data["host"] = host
     data["api_token"] = api_token
 
     with open("botany-settings.json", "w") as f:
         json.dump(data, f, indent=4)
+
+    print("Now run:")
+    print()
+    print(f"    pip install {data['botany_game_package']}")
+    print()
 
 
 @cli.command(short_help="Submit bot code")
