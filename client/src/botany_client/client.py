@@ -1,11 +1,12 @@
 import json
 import os
 import re
+import sys
 
 import click
 import requests
 
-from botany_core import loader, runner
+from botany_core import loader, runner, verifier
 
 from . import utils
 
@@ -47,6 +48,16 @@ def submit(path):
     bot_name = os.path.basename(path)
     with open(path) as f:
         bot_code = f.read()
+
+    try:
+        verifier.verify_bot_code(bot_code)
+    except verifier.InvalidBotCode as e:
+        print("Bot code does not conform to the bot specification:")
+        print()
+        print(f"  {e}")
+        print()
+        print("Refer to the Botany user guide for more details")
+        sys.exit(1)
 
     data = {
         "api_token": settings["api_token"],
