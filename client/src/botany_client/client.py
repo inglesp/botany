@@ -1,18 +1,13 @@
+import json
 import os
+import re
 
 import click
-
 import requests
+
 from botany_core import loader, runner
 
-SETTINGS_TPL = """
-# TODO Comment this
-
-HOST = "{host}"
-API_TOKEN = "{api_token}"
-GAME_MODULE = "{botany_game_module}"
-NUM_ROUNDS = {botany_num_rounds}
-""".lstrip()
+from . import utils
 
 
 @click.group()
@@ -27,7 +22,7 @@ def init(host):
         host = host[:-1]
 
     setup_url = host + "/api/setup/"
-    # TODO If settings.py in current directory, quit
+    # TODO If botany-settings.json in current directory, quit
     rsp = requests.get(setup_url)
     data = rsp.json()
     # TODO Check return code
@@ -39,21 +34,25 @@ def init(host):
     data["host"] = host
     data["api_token"] = api_token
 
-    with open("settings.py", "w") as f:
-        f.write(SETTINGS_TPL.format(**data))
+    with open("botany-settings.json", "w") as f:
+        json.dump(data, f, indent=4)
 
 
 @cli.command(short_help="Submit bot code")
 @click.argument("path")
 def submit(path):
-    import settings
+    settings = utils.load_settings()
 
-    submit_url = settings.HOST + "/api/submit/"
+    submit_url = settings["host"] + "/api/submit/"
     bot_name = os.path.basename(path)
     with open(path) as f:
         bot_code = f.read()
 
-    data = {"api_token": settings.API_TOKEN, "bot_name": bot_name, "bot_code": bot_code}
+    data = {
+        "api_token": settings["api_token"],
+        "bot_name": bot_name,
+        "bot_code": bot_code,
+    }
     rsp = requests.post(submit_url, data=data)
     rsp.raise_for_status()
 
@@ -63,9 +62,7 @@ def submit(path):
 @click.argument("path2")
 @click.option("--opcode-limit", type=int, default=None)
 def play(path1, path2, opcode_limit):
-    import settings
-
-    game = loader.load_module_from_dotted_path(settings.GAME_MODULE)
+    game = utils.load_game()
 
     def get_next_move_human(board):
         available_moves = game.available_moves(board)
