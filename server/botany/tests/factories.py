@@ -69,6 +69,7 @@ def report_result(bot1_id, bot2_id, score, move_list=None):
         score=score,
         move_list=move_list,
         traceback=None,
+        invalid_move=None,
     )
 
     actions.report_result(bot1_id, bot2_id, result)

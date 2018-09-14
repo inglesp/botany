@@ -24,6 +24,7 @@ class Result:
     score = attr.ib()
     move_list = attr.ib()
     traceback = attr.ib()
+    invalid_move = attr.ib()
 
     @property
     def is_complete(self):
@@ -44,12 +45,13 @@ def rerun_game(game, move_list):
 
 
 def run_game(game, fn1, fn2, opcode_limit=None, display_board=False):
-    def build_result(result_type, score, traceback=None):
+    def build_result(result_type, score, traceback=None, invalid_move=None):
         return Result(
             result_type=result_type,
             score=score,
             move_list=move_list,
             traceback=traceback,
+            invalid_move=invalid_move,
         )
 
     # TODO move game validation elsewhere?
@@ -105,7 +107,9 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False):
             move, state = rv, None
 
         if move not in available_moves:
-            return build_result(ResultType.INVALID_MOVE, losing_scores[player_ix])
+            return build_result(
+                ResultType.INVALID_MOVE, losing_scores[player_ix], invalid_move=move
+            )
 
         try:
             json.dumps(state)

@@ -135,8 +135,37 @@ def play(path1, path2, opcode_limit):
     result = runner.run_game(
         game, fn1, fn2, opcode_limit=opcode_limit, display_board=True
     )
-    if result.traceback:
+
+    if result.score == 1:
+        winning_bot = f"bot1 ({path1})"
+        losing_bot = f"bot2 ({path2})"
+    elif result.score == 0:
+        winning_bot = None
+        losing_bot = None
+    elif result.score == -1:
+        winning_bot = f"bot2 ({path2})"
+        losing_bot = f"bot1 ({path1})"
+    else:
+        assert False
+
+    if result.result_type == runner.ResultType.INVALID_MOVE:
+        print(f"{losing_bot} made an invalid move: {result.invalid_move}")
+    elif result.result_type == runner.ResultType.EXCEPTION:
+        print(f"{losing_bot} raised an exception:")
         print(result.traceback)
+    elif result.result_type == runner.ResultType.TIMEOUT:
+        print(f"{losing_bot} exceeded the opcode limit")
+    elif result.result_type == runner.ResultType.INVALID_STATE:
+        print(f"{losing_bot} returned an invalid state")
+    else:
+        assert result.result_type == runner.ResultType.COMPLETE
+
+    if winning_bot is None:
+        print("game drawn")
+    else:
+        print(f"{winning_bot} wins")
+
+    print()
 
 
 @cli.command(short_help="Run tournament between several bots")

@@ -188,6 +188,7 @@ class ReportResultTest(TestCase):
                 score=score,
                 move_list=[0, 1, 4, 7, 8],
                 traceback=None,
+                invalid_move=None,
             )
 
         actions.report_result(bot1.id, bot2.id, build_result(1))

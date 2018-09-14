@@ -156,6 +156,7 @@ class RunGameTests(TestCase):
             score=1,
             move_list=[0, 1, 2, 3, 4, 5, 6],
             traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
@@ -174,6 +175,7 @@ class RunGameTests(TestCase):
             score=-1,
             move_list=[1, 2, 3, 4, 5, 6],
             traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
@@ -192,6 +194,7 @@ class RunGameTests(TestCase):
             score=0,
             move_list=[0, 2, 1, 3, 5, 4, 6, 8, 7],
             traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
@@ -210,6 +213,7 @@ class RunGameTests(TestCase):
             score=1,
             move_list=[0, 1, 2, 3, 4, 5, 6],
             traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
@@ -228,6 +232,7 @@ class RunGameTests(TestCase):
             score=1,
             move_list=[0, 1, 2, 3, 4, 5, 6],
             traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
@@ -242,7 +247,11 @@ class RunGameTests(TestCase):
         result = run_game(game, get_next_move_1, get_next_move_8)
 
         expected_result = Result(
-            result_type=ResultType.INVALID_MOVE, score=1, move_list=[0], traceback=None
+            result_type=ResultType.INVALID_MOVE,
+            score=1,
+            move_list=[0],
+            traceback=None,
+            invalid_move=0,
         )
 
         self.assertEqual(result, expected_result)
@@ -271,7 +280,11 @@ class RunGameTests(TestCase):
         result = run_game(game, get_next_move_1, get_next_move_10, opcode_limit=1000)
 
         expected_result = Result(
-            result_type=ResultType.TIMEOUT, score=1, move_list=[0], traceback=None
+            result_type=ResultType.TIMEOUT,
+            score=1,
+            move_list=[0],
+            traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
@@ -290,6 +303,7 @@ class RunGameTests(TestCase):
             score=1,
             move_list=[0, 1, 2, 3, 4, 5, 6],
             traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
@@ -304,7 +318,11 @@ class RunGameTests(TestCase):
         result = run_game(game, get_next_move_1, get_next_move_11)
 
         expected_result = Result(
-            result_type=ResultType.INVALID_STATE, score=1, move_list=[0], traceback=None
+            result_type=ResultType.INVALID_STATE,
+            score=1,
+            move_list=[0],
+            traceback=None,
+            invalid_move=None,
         )
 
         self.assertEqual(result, expected_result)
