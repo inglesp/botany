@@ -1,79 +1,69 @@
-import json
 import os
 import re
-import sys
 
 import click
 import requests
 
-from botany_core import loader, runner, tracer, verifier
+from botany_core import runner, tracer
 
 from . import utils
 
 
 @click.group()
 def cli():
-    """botany"""
+    """Botany"""
 
 
-@cli.command(short_help="Initialise current directory")
-@click.argument("host")
-def init(host):
-    if host[-1] == "/":
-        host = host[:-1]
+@cli.command(short_help="Initialise Botany in current directory")
+@click.argument("origin")
+def init(origin):
+    if origin[-1] == "/":
+        origin = origin[:-1]
 
-    setup_url = host + "/api/setup/"
-    # TODO If botany-settings.json in current directory, quit
+    setup_url = origin + "/api/setup/"
     rsp = requests.get(setup_url)
-    data = rsp.json()
-    # TODO Check return code
+    if not rsp.ok:
+        raise click.UsageError(f"Received {rsp.status_code} from server")
 
-    token_url = host + "/token/"
+    settings = rsp.json()
+
     print()
-    print(f"Visit {token_url} and enter your API token")
+    print(f"Visit {origin}/token/ and enter your API token")
     print()
     api_token = input("> ")
     print()
 
-    data["host"] = host
-    data["api_token"] = api_token
+    settings["origin"] = origin
+    settings["api_token"] = api_token
 
-    with open("botany-settings.json", "w") as f:
-        json.dump(data, f, indent=4)
+    utils.write_settings(settings)
 
     print("Now run:")
     print()
-    print(f"    pip install {data['botany_game_package']}")
+    print(f"    pip install {settings['botany_game_package']}")
     print()
 
 
 @cli.command(short_help="Submit bot code")
 @click.argument("path")
 def submit(path):
-    settings = utils.load_settings()
-
-    submit_url = settings["host"] + "/api/submit/"
+    submit_url = utils.get_setting("origin") + "/api/submit/"
     bot_name = os.path.basename(path)
-    with open(path) as f:
-        bot_code = f.read()
-
-    try:
-        verifier.verify_bot_code(bot_code)
-    except verifier.InvalidBotCode as e:
-        print("Bot code does not conform to the bot specification:")
-        print()
-        print(f"  {e}")
-        print()
-        print("Refer to the Botany user guide for more details")
-        sys.exit(1)
+    bot_code = utils.read_bot_code(path)
 
     data = {
-        "api_token": settings["api_token"],
+        "api_token": utils.get_setting("api_token"),
         "bot_name": bot_name,
         "bot_code": bot_code,
     }
     rsp = requests.post(submit_url, data=data)
-    rsp.raise_for_status()
+
+    if rsp.status_code == 404:
+        raise click.UsageError("Could not find user with API token")
+    elif not rsp.ok:
+        raise click.UsageError(f"Received {rsp.status_code} from server")
+
+    print("Bot code submitted successfully!")
 
 
 @cli.command(short_help="Play game between bots and/or humans")
@@ -81,8 +71,7 @@ def submit(path):
 @click.argument("path2")
 @click.option("--opcode-limit", type=int, default=None)
 def play(path1, path2, opcode_limit):
-    settings = utils.load_settings()
-    game = utils.load_game()
+    game = utils.load_game_module()
 
     def get_next_move_human(board):
         available_moves = game.available_moves(board)
@@ -121,7 +110,7 @@ def play(path1, path2, opcode_limit):
         return wrapped
 
     if opcode_limit is None:
-        opcode_limit = settings["botany_opcode_limit"]
+        opcode_limit = utils.get_setting("botany_opcode_limit")
 
     if not tracer.opcode_limit_supported:
         print("Opcode limiting not supported in this version of Python")
@@ -131,13 +120,13 @@ def play(path1, path2, opcode_limit):
     if path1 == "human":
         fn1 = get_next_move_human
     else:
-        mod1 = loader.load_module_from_filesystem_path("mod1", path1)
+        mod1 = utils.create_bot_module("mod1", path1)
         fn1 = wrap_bot_fn(mod1.get_next_move)
 
     if path2 == "human":
         fn2 = get_next_move_human
     else:
-        mod2 = loader.load_module_from_filesystem_path("mod2", path2)
+        mod2 = utils.create_bot_module("mod2", path2)
         fn2 = wrap_bot_fn(mod2.get_next_move)
 
     result = runner.run_game(
@@ -184,14 +173,13 @@ def play(path1, path2, opcode_limit):
 @click.option("--num-rounds", type=int, default=None)
 @click.option("--opcode-limit", type=int, default=None)
 def tournament(path1, path2, pathn, full_output, num_rounds, opcode_limit):
-    settings = utils.load_settings()
-    game = utils.load_game()
+    game = utils.load_game_module()
 
     paths = [path1, path2] + list(pathn)
     bots = []
 
     for path in paths:
-        mod = loader.load_module_from_filesystem_path("mod", path)
+        mod = utils.create_bot_module("mod", path)
         bots.append(
             {
                 "path": path,
@@ -205,10 +193,10 @@ def tournament(path1, path2, pathn, full_output, num_rounds, opcode_limit):
         )
 
     if num_rounds is None:
-        num_rounds = settings["botany_num_rounds"]
+        num_rounds = utils.get_setting("botany_num_rounds")
 
     if opcode_limit is None:
-        opcode_limit = settings["botany_opcode_limit"]
+        opcode_limit = utils.get_setting("botany_opcode_limit")
 
     if not tracer.opcode_limit_supported:
         print("Opcode limiting not supported in this version of Python")

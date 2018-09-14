@@ -10,10 +10,3 @@ def create_module_from_str(name, code):
 
 def load_module_from_dotted_path(path):
     return import_module(path)
-
-
-def load_module_from_filesystem_path(name, path):
-    with open(path) as f:
-        code = f.read()
-
-    return create_module_from_str(name, code)
