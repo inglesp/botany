@@ -22,13 +22,15 @@ def create_house_bot(name, code):
     # unplayed_games_for_bot().
     assert Bot.objects.exclude(state="house").count() == 0
 
-    bot = Bot.objects.create(name=name, code=code, state="house")
+    bot = Bot.objects.create(name=name, version=0, code=code, state="house")
     return bot
 
 
 def create_bot(user, name, code):
-    # TODO add suffix to name
-    bot = Bot.objects.create(user=user, name=name, code=code, state="probation")
+    version = user.bots.filter(name=name).count()
+    bot = Bot.objects.create(
+        user=user, name=name, version=version, code=code, state="probation"
+    )
     schedule_games_against_house_bots(bot)
     return bot
 

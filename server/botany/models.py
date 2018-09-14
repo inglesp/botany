@@ -53,10 +53,14 @@ class Bot(AbastractBotanyModel):
         User, related_name="bots", on_delete=models.CASCADE, null=True
     )
     name = models.CharField(max_length=32)
+    version = models.IntegerField()
     code = models.TextField()
     state = models.CharField(max_length=10, choices=STATES)
 
     objects = managers.BotManager()
+
+    class Meta:
+        unique_together = ["user", "name", "version"]
 
     def __init__(self, *args, **kwargs):
         self._score = None

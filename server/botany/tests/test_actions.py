@@ -51,9 +51,16 @@ class CreateBotTests(TestCase):
 
         self.assertEqual(bot.user, user)
         self.assertEqual(bot.name, "randobot")
+        self.assertEqual(bot.version, 0)
         self.assertEqual(bot.code, code)
         self.assertTrue(bot.is_under_probation)
         self.assertEqual(user.active_bot, bot)
+
+        bot = actions.create_bot(user, "randobot", code)
+
+        self.assertEqual(bot.user, user)
+        self.assertEqual(bot.name, "randobot")
+        self.assertEqual(bot.version, 1)
 
 
 class SetBotActiveTests(TestCase):
