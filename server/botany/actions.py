@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db import transaction
 
 from botany_core import loader, runner
 
@@ -55,6 +56,23 @@ def schedule_unplayed_games_for_bot(bot):
 
 def schedule_all_unplayed_games():
     scheduler.schedule_games(all_unplayed_games())
+
+
+def play_games_between_house_bots():
+    assert Game.objects.count() == 0
+
+    house_bots = Bot.objects.house_bots()
+
+    with transaction.atomic():
+        for bot1 in house_bots:
+            for bot2 in house_bots:
+                if bot1 == bot2:
+                    continue
+
+                for _ in range(settings.BOTANY_NUM_ROUNDS):
+                    result = play_game(bot1.id, bot2.id)
+                    assert result.is_complete
+                    report_result(bot1.id, bot2.id, result)
 
 
 def play_games_against_house_bots(bot_id):

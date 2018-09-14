@@ -131,6 +131,17 @@ class ScheduleAllUnplayedGamesTests(TestCase):
         self.assertEqual(len(queue.jobs), 24)
 
 
+class PlayGamesBetweenHouseBotTests(TestCase):
+    def test_play_games_between_house_bots(self):
+        factories.create_house_bot()
+        factories.create_house_bot()
+        factories.create_house_bot()
+
+        actions.play_games_between_house_bots()
+
+        self.assertEqual(models.Game.objects.count(), 30)
+
+
 class PlayGamesAgainstHouseBotsTests(TestCase):
     @classmethod
     def setUpTestData(cls):
