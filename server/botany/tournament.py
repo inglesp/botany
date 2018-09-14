@@ -59,9 +59,9 @@ def all_unplayed_games():
 def summary():
     return {
         "num_bots": Bot.objects.count(),
-        "num_active_bots": Bot.objects.active_bots().count(),
+        "num_active_bots": Bot.objects.active_or_house_bots().count(),
         "num_games": Game.objects.count(),
-        "num_games_between_active_bots": Game.objects.games_between_active_bots().count(),
+        "num_games_between_active_bots": Game.objects.games_between_active_or_house_bots().count(),
     }
 
 
@@ -145,7 +145,7 @@ def standings():
     sql = """
 WITH active_bots AS (
     SELECT * FROM botany_bot
-    WHERE state = 'active'
+    WHERE state in ('active', 'house')
 ),
 
 annotated_games AS (
@@ -238,7 +238,7 @@ def standings_against_bot(bot):
     sql = """
 WITH active_bots AS (
     SELECT * FROM botany_bot
-    WHERE state = 'active'
+    WHERE state in ('active', 'house')
 ),
 
 annotated_games AS (

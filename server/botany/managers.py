@@ -42,10 +42,18 @@ class BotManager(models.Manager):
     def active_bots(self):
         return self.filter(state="active")
 
+    def active_or_house_bots(self):
+        return self.filter(state__in=["active", "house"])
+
 
 class GameManager(models.Manager):
     def games_between_active_bots(self):
         return self.filter(bot1__state="active", bot2__state="active")
+
+    def games_between_active_or_house_bots(self):
+        return self.filter(
+            bot1__state__in=["active", "house"], bot2__state__in=["active", "house"]
+        )
 
     def all_against_bot(self, bot):
         return self.filter(Q(bot1=bot) | Q(bot2=bot)).order_by("-created_at")
