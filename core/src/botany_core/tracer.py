@@ -17,6 +17,7 @@ def build_tracer(limit):
                 raise OpCodeLimitExceeded()
         return tracer
 
+    tracer.opcode_limit = limit
     tracer.opcode_count = 0
     return tracer
 
@@ -31,3 +32,19 @@ def limited_opcodes(limit):
         yield tracer
     finally:
         sys.settrace(original_tracer)
+
+
+def get_opcode_count():
+    tracer = sys.gettrace()
+    try:
+        return tracer.opcode_count
+    except AttributeError:
+        return None
+
+
+def get_opcode_limit():
+    tracer = sys.gettrace()
+    try:
+        return tracer.opcode_limit
+    except AttributeError:
+        return None

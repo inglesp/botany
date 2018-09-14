@@ -40,6 +40,22 @@ class TracerTests(TestCase):
 
         self.assertTrue(0 < trace.opcode_count < 100)
 
+    def test_get_opcode_count(self):
+        self.assertIsNone(tracer.get_opcode_count())
+
+        with tracer.limited_opcodes(100):
+            self.assertTrue(0 < tracer.get_opcode_count() < 100)
+
+        self.assertIsNone(tracer.get_opcode_count())
+
+    def test_get_oplimit_count(self):
+        self.assertIsNone(tracer.get_opcode_limit())
+
+        with tracer.limited_opcodes(100):
+            self.assertEqual(tracer.get_opcode_limit(), 100)
+
+        self.assertIsNone(tracer.get_opcode_limit())
+
 
 class VerifierTests(TestCase):
     def test_valid_code(self):
