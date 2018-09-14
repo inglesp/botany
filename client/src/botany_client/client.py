@@ -6,7 +6,7 @@ import sys
 import click
 import requests
 
-from botany_core import loader, runner, verifier
+from botany_core import loader, runner, tracer, verifier
 
 from . import utils
 
@@ -73,6 +73,7 @@ def submit(path):
 @click.argument("path2")
 @click.option("--opcode-limit", type=int, default=None)
 def play(path1, path2, opcode_limit):
+    settings = utils.load_settings()
     game = utils.load_game()
 
     def get_next_move_human(board):
@@ -111,6 +112,14 @@ def play(path1, path2, opcode_limit):
 
         return wrapped
 
+    if opcode_limit is None:
+        opcode_limit = settings["botany_opcode_limit"]
+
+    if not tracer.opcode_limit_supported:
+        print("Opcode limiting not supported in this version of Python")
+        print()
+        opcode_limit = None
+
     if path1 == "human":
         fn1 = get_next_move_human
     else:
@@ -123,7 +132,9 @@ def play(path1, path2, opcode_limit):
         mod2 = loader.load_module_from_filesystem_path("mod2", path2)
         fn2 = wrap_bot_fn(mod2.get_next_move)
 
-    result = runner.run_game(game, fn1, fn2, display_board=True)
+    result = runner.run_game(
+        game, fn1, fn2, opcode_limit=opcode_limit, display_board=True
+    )
     if result.traceback:
         print(result.traceback)
 
@@ -159,6 +170,14 @@ def tournament(path1, path2, pathn, full_output, num_rounds, opcode_limit):
     if num_rounds is None:
         num_rounds = settings["botany_num_rounds"]
 
+    if opcode_limit is None:
+        opcode_limit = settings["botany_opcode_limit"]
+
+    if not tracer.opcode_limit_supported:
+        print("Opcode limiting not supported in this version of Python")
+        print()
+        opcode_limit = None
+
     for bot1 in bots:
         for bot2 in bots:
             if bot1 == bot2:
@@ -168,7 +187,9 @@ def tournament(path1, path2, pathn, full_output, num_rounds, opcode_limit):
                 print(f"{bot1['path']} vs {bot2['path']}")
 
             for ix in range(num_rounds):
-                result = runner.run_game(game, bot1["fn"], bot2["fn"])
+                result = runner.run_game(
+                    game, bot1["fn"], bot2["fn"], opcode_limit=opcode_limit
+                )
 
                 bot1["num_played"] += 1
                 bot2["num_played"] += 1

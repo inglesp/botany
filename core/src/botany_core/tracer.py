@@ -1,6 +1,8 @@
 import sys
 from contextlib import contextmanager
 
+opcode_limit_supported = (sys.version_info.major, sys.version_info.minor) >= (3, 7)
+
 
 class OpCodeLimitExceeded(Exception):
     pass
