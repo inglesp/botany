@@ -207,12 +207,17 @@ class PlayGameTests(TestCase):
 
 
 class ReportResultTest(TestCase):
-    def build_result(self, score):
+    def build_result(self, score, result_type=ResultType.COMPLETE):
+        if result_type == ResultType.EXCEPTION:
+            traceback = "KeyError ..."
+        else:
+            traceback = None
+
         return Result(
-            result_type=ResultType.COMPLETE,
+            result_type=result_type,
             score=score,
             move_list=[0, 1, 4, 7, 8],
-            traceback=None,
+            traceback=traceback,
             invalid_move=None,
         )
 
@@ -227,6 +232,7 @@ class ReportResultTest(TestCase):
         self.assertEqual(game.bot2_id, bot2.id)
         self.assertEqual(game.score, 1)
         self.assertEqual(game.moves, "01478")
+        self.assertEqual(game.result_type, "complete")
 
         actions.report_result(bot1.id, bot2.id, self.build_result(-1))
         actions.report_result(bot2.id, bot1.id, self.build_result(1))
@@ -237,6 +243,21 @@ class ReportResultTest(TestCase):
 
         self.assertEqual(bot1.score, -1)
         self.assertEqual(bot2.score, 1)
+
+    def test_report_result_for_incomplete_game(self):
+        bot1, bot2 = [factories.create_bot() for _ in range(2)]
+
+        result = self.build_result(1, ResultType.EXCEPTION)
+        actions.report_result(bot1.id, bot2.id, result)
+
+        game = models.Game.objects.get()
+
+        self.assertEqual(game.bot1_id, bot1.id)
+        self.assertEqual(game.bot2_id, bot2.id)
+        self.assertEqual(game.score, 1)
+        self.assertEqual(game.moves, "01478")
+        self.assertEqual(game.result_type, "exception")
+        self.assertEqual(game.traceback, "KeyError ...")
 
     def test_report_result_when_all_games_played(self):
         bot1, bot2 = [factories.create_bot() for _ in range(2)]

@@ -140,8 +140,12 @@ def report_result(bot1_id, bot2_id, result):
     ):
         return
 
-    # TODO: if game not complete, record reason
     moves = "".join(str(move) for move in result.move_list)
     Game.objects.create(
-        bot1_id=bot1_id, bot2_id=bot2_id, score=result.score, moves=moves
+        bot1_id=bot1_id,
+        bot2_id=bot2_id,
+        score=result.score,
+        moves=moves,
+        result_type=result.result_type.value,
+        traceback=result.traceback,
     )

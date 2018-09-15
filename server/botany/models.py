@@ -182,6 +182,8 @@ class Game(AbastractBotanyModel):
     bot2 = models.ForeignKey(Bot, related_name="bot2_games", on_delete=models.CASCADE)
     score = models.IntegerField()
     moves = models.CharField(max_length=255)
+    result_type = models.CharField(max_length=25)
+    traceback = models.TextField(null=True)
 
     objects = managers.GameManager()
 

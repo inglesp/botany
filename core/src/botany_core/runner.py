@@ -3,7 +3,7 @@ import itertools
 import json
 import traceback
 from copy import copy, deepcopy
-from enum import Enum, auto
+from enum import Enum
 
 import attr
 
@@ -11,11 +11,11 @@ from .tracer import OpCodeLimitExceeded, limited_opcodes
 
 
 class ResultType(Enum):
-    COMPLETE = auto()  # The game was played to completion
-    INVALID_MOVE = auto()  # The losing player made an invalid move
-    EXCEPTION = auto()  # The losing player's code raised an exception
-    TIMEOUT = auto()  # The losing player's code used too many opcodes
-    INVALID_STATE = auto()  # The losing player's code returned invalid state
+    COMPLETE = "complete"  # The game was played to completion
+    INVALID_MOVE = "invalid_move"  # The losing player made an invalid move
+    EXCEPTION = "exception"  # The losing player's code raised an exception
+    TIMEOUT = "timeout"  # The losing player's code used too many opcodes
+    INVALID_STATE = "invalid_state"  # The losing player's code returned invalid state
 
 
 @attr.s
