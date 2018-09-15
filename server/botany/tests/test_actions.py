@@ -70,7 +70,7 @@ class SetBotActiveTests(TestCase):
         self.assertFalse(bot1.is_active)
         self.assertTrue(bot2.is_active)
 
-        actions.set_bot_active(bot1)
+        actions.set_bot_active(bot1, user)
 
         bot1.refresh_from_db()
         bot2.refresh_from_db()

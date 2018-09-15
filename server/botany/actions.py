@@ -35,8 +35,9 @@ def create_bot(user, name, code):
     return bot
 
 
-def set_bot_active(bot):
+def set_bot_active(bot, user):
     assert bot.is_under_probation or bot.is_inactive
+    assert bot.user == user
     bot.set_active()
     schedule_unplayed_games_for_bot(bot)
 
@@ -93,7 +94,7 @@ def play_games_against_house_bots(bot_id):
                     mark_bot_failed(bot)
                     return
 
-    set_bot_active(bot)
+    set_bot_active(bot, bot.user)
 
 
 def play_game_and_report_result(bot1_id, bot2_id):

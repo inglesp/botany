@@ -46,7 +46,7 @@ def create_bot(user=None, name=None, code=None, state="active"):
     if state == "probation":
         pass
     elif state == "active":
-        actions.set_bot_active(bot)
+        actions.set_bot_active(bot, user)
     else:
         assert False
 

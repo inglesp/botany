@@ -1,6 +1,9 @@
+import random
+
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -8,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from botany_core import loader, runner, verifier
 
-from .actions import create_bot, create_user
+from .actions import create_bot, create_user, set_bot_active
 from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
@@ -79,9 +82,22 @@ def bot_head_to_head(request, bot_id, other_bot_id):
 
 def user_bots(request, user_id):
     user = get_object_or_404(User, id=user_id)
-    bots = user.bots.all()
+    editable = user == request.user
 
-    ctx = {"user": user, "bots": bots.order_by("-created_at")}
+    if request.POST:
+        if not editable:
+            raise PermissionDenied
+
+        bot = get_object_or_404(Bot, id=request.POST["bot_id"])
+        set_bot_active(bot, request.user)
+        return redirect(reverse("user_bots", args=[user_id]))
+
+    ctx = {
+        "user": user,
+        "bots": user.bots.order_by("-created_at"),
+        "editable": editable,
+        "bot_img_src": f"botany/img/botany-bot-{random.randint(1, 7)}.png",
+    }
     return render(request, "botany/user_bots.html", ctx)
 
 
