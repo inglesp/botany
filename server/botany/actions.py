@@ -121,7 +121,12 @@ def play_game(bot1_id, bot2_id):
     mod1 = loader.create_module_from_str("mod1", bot1.code)
     mod2 = loader.create_module_from_str("mod2", bot2.code)
 
-    return runner.run_game(game, mod1.get_next_move, mod2.get_next_move)
+    return runner.run_game(
+        game,
+        mod1.get_next_move,
+        mod2.get_next_move,
+        opcode_limit=settings.BOTANY_OPCODE_LIMIT,
+    )
 
 
 def report_result(bot1_id, bot2_id, result):
