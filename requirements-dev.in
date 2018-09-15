@@ -5,3 +5,4 @@ coverage
 flake8
 hypothesis
 isort
+twine
