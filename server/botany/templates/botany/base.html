@@ -24,6 +24,7 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" href="https://docs.google.com/document/d/1gUWe1VRwh3-AXB8ZUlsRNRfty6SzoZgpHWtLhVjA5mE/edit?usp=sharing">User guide</a></li>
             {% if user.is_authenticated %}
             <li class="nav-item"><a class="nav-link" href="{% url 'user_bots' user_id=request.user.id %}">My bots</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Log out</a></li>
