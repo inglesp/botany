@@ -71,6 +71,12 @@ class Bot(AbastractBotanyModel):
         self._num_losses = None
         super().__init__(*args, **kwargs)
 
+    def user_name(self):
+        if self.is_house_bot:
+            return "house"
+        else:
+            return self.user.name
+
     def set_active(self):
         self.user.bots.update(state="inactive")
         self.state = "active"
@@ -181,11 +187,11 @@ class Game(AbastractBotanyModel):
 
     def summary(self):
         if self.score == 1:
-            return f"{self.bot1.name} won"
+            return "bot1 won"
         elif self.score == 0:
             return "draw"
         elif self.score == -1:
-            return f"{self.bot2.name} won"
+            return "bot2 won"
         else:
             assert False
 

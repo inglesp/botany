@@ -1,0 +1,14 @@
+<ul>
+  {% for g in games %}
+  <li>
+    <a href="{% url 'game' g.id %}">
+      {% if bot == g.bot1 %}
+      As bot1 against {{ g.bot2.user_name }} : : {{ g.bot2.name }}
+      {% else %}
+      As bot2 against {{ g.bot2.user_name }} : : {{ g.bot1.name }}
+      {% endif %}
+      ({{ g.summary }})
+    </a>
+  </li>
+  {% endfor %}
+</ul>

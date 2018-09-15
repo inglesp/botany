@@ -3,13 +3,13 @@
 {% block content %}
 <div class="row">
   <div class="col-sm">
-    <h1>Games against {{ bot.name }}</h1>
+    <h1>Games against <a href="{% url 'user_bots' bot.user_id %}">{{ bot.user_name }}</a> :: {{ bot.name_and_version }}</h1>
   </div>
 </div>
 
 <div class="row">
   <div class="col-sm-4">
-    {% include "botany/_games.html" with games=games %}
+    {% include "botany/_bot_games.html" with games=games %}
   </div>
 </div>
 

@@ -11,12 +11,12 @@
   <div class="col-md-3">
     <table class="table table-sm">
       <tr>
-        <th>Bot 1</th>
-        <td>{{ bot1.name }}</td>
+        <th>bot1</th>
+        <td><a href="{% url 'user_bots' bot1.user_id %}">{{ bot1.user_name }}</a> : : <a href="{% url 'bot' bot1.id %}">{{ bot1.name_and_version }}</a></td>
       </tr>
       <tr>
-        <th>Bot 2</th>
-        <td>{{ bot2.name }}</td>
+        <th>bot2</th>
+        <td><a href="{% url 'user_bots' bot2.user_id %}">{{ bot2.user_name }}</a> : : <a href="{% url 'bot' bot2.id %}">{{ bot2.name_and_version }}</a></td>
       </tr>
       <tr>
         <th>Result</th>

@@ -12,12 +12,20 @@
   <tbody>
     {% for bot in standings %}
     <tr>
-      {% if linkto == 'bot' %}
-      <td><a href="{% url linkto bot.id %}">{{ bot.name }}</a></td>
-      {% elif linkto == 'bot_head_to_head' %}
-      <td><a href="{% url linkto this_bot_id bot.id %}">{{ bot.name }}</a></td>
-      {% else %}
-      <td>{{ bot.name }}</td>
+      <td>
+        {% if bot.is_house_bot %}
+        house
+        {% else %}
+        <a href="{% url 'user_bots' bot.user_id %}">{{ bot.user_name }}</a>
+        {% endif %}
+        : :
+        {% if linkto == 'bot' %}
+        <a href="{% url linkto bot.id %}">{{ bot.name_and_version }}</a>
+        {% elif linkto == 'bot_head_to_head' %}
+        <a href="{% url linkto this_bot_id bot.id %}">{{ bot.name_and_version }}</a>
+        {% else %}
+        {{ bot.name }}
+      </td>
       {% endif %}
       <td>{{ bot.num_played }}</td>
       <td>{{ bot.num_wins }}</td>

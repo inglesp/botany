@@ -38,7 +38,7 @@
           <td>{{ bot.created_at }}</td>
           <td>
             {% if editable %}
-            {% if not bot.is_active %}
+            {% if bot.is_inactive %}
             <form method="post" class="form-inline">
               {% csrf_token %}
               <input type="hidden" name="bot_id" value="{{ bot.id }}" />
