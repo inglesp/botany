@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 import dj_database_url
-import raven
 
 # Game settings
 BOTANY_GAME_MODULE = os.environ["BOTANY_GAME_MODULE"]
@@ -156,6 +155,5 @@ RAVEN_PUBLIC_KEY = os.environ["RAVEN_PUBLIC_KEY"]
 RAVEN_PRIVATE_KEY = os.environ["RAVEN_PRIVATE_KEY"]
 
 RAVEN_CONFIG = {
-    "dsn": f"https://{RAVEN_PUBLIC_KEY}:{RAVEN_PRIVATE_KEY}@sentry.io/{RAVEN_PROJECT}",
-    "release": raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
+    "dsn": f"https://{RAVEN_PUBLIC_KEY}:{RAVEN_PRIVATE_KEY}@sentry.io/{RAVEN_PROJECT}"
 }
