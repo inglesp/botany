@@ -9,6 +9,7 @@ from .tournament import all_unplayed_games, unplayed_games_for_bot
 
 
 def create_user(email_addr, name):
+    assert name != "house"
     return User.objects.create_user(email_addr=email_addr, name=name)
 
 
