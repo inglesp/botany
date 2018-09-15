@@ -18,6 +18,7 @@ if __name__ == "__main__":
     setup(
         name="botany-core",
         version=VERSION,
+        python_requires=">=3.5",
         description="Botany core",
         packages=find_packages(where="src"),
         package_dir={"": "src"},

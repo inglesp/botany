@@ -18,6 +18,7 @@ if __name__ == "__main__":
     setup(
         name="botany-client",
         version=VERSION,
+        python_requires=">=3.5",
         description="Botany client",
         packages=find_packages(where="src"),
         package_dir={"": "src"},
