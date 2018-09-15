@@ -29,7 +29,7 @@
             <img src="{% static bot_img_src %}" width=40 height=40 title="Active bot">
             {% endif %}
           </td>
-          <td>{{ bot.name_and_version }}</td>
+          <td><a href="{% url 'bot' bot.id %}">{{ bot.name_and_version }}</a></td>
           <td>{{ bot.num_played }}</td>
           <td>{{ bot.num_wins }}</td>
           <td>{{ bot.num_draws }}</td>
