@@ -22,6 +22,12 @@
         <th>Result</th>
         <td>{{ game.summary }}</td>
       </tr>
+      {% if game.details %}
+      <tr>
+        <th>Details</th>
+        <th>{{ game.details }}</th>
+      </tr>
+      {% endif %}
     </table>
   </div>
 

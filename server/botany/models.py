@@ -197,5 +197,27 @@ class Game(AbastractBotanyModel):
         else:
             assert False
 
+    def details(self):
+        if self.result_type == "complete":
+            return
+
+        if self.score == 1:
+            losing_bot = "bot2"
+        elif self.score == -1:
+            losing_bot = "bot1"
+        else:
+            assert False
+
+        if self.result_type == "invalid_move":
+            return f"{losing_bot} made an invalid move"
+        elif self.result_type == "exception":
+            return f"{losing_bot} raised an exception"
+        elif self.result_type == "timeout":
+            return f"{losing_bot} exceeded the opcode limit"
+        elif self.result_type == "invalid_state":
+            return f"{losing_bot} returned an invalid state"
+        else:
+            assert False
+
     def move_list(self):
         return [int(s) for s in self.moves]
