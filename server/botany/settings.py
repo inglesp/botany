@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 import dj_database_url
+import raven
 
 # Game settings
 BOTANY_GAME_MODULE = os.environ["BOTANY_GAME_MODULE"]
@@ -49,6 +50,7 @@ USE_FAKE_AUTH = bool(os.getenv("USE_FAKE_AUTH"))
 INSTALLED_APPS = [
     "botany",
     "django_rq",
+    "raven.contrib.django.raven_compat",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -146,3 +148,14 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# Raven
+
+RAVEN_PROJECT = os.environ["RAVEN_PROJECT"]
+RAVEN_PUBLIC_KEY = os.environ["RAVEN_PUBLIC_KEY"]
+RAVEN_PRIVATE_KEY = os.environ["RAVEN_PRIVATE_KEY"]
+
+RAVEN_CONFIG = {
+    "dsn": f"https://{RAVEN_PUBLIC_KEY}:{RAVEN_PRIVATE_KEY}@sentry.io/{RAVEN_PROJECT}",
+    "release": raven.fetch_git_sha(os.path.dirname(BASE_DIR)),
+}

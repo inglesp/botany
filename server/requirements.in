@@ -6,4 +6,5 @@ django-dotenv
 django-rq
 gunicorn
 psycopg2-binary
+raven
 whitenoise
