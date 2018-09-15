@@ -193,3 +193,7 @@ def api_submit(request):
 
     create_bot(user, request.POST["bot_name"], bot_code)
     return JsonResponse({})
+
+
+def error(request):
+    1 / 0

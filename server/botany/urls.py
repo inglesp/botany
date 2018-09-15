@@ -23,6 +23,7 @@ urlpatterns = [
     path("token/", views.token, name="token"),
     path("api/setup/", views.api_setup, name="api_setup"),
     path("api/submit/", views.api_submit, name="api_submit"),
+    path("500/", views.error),
 ]
 
 
