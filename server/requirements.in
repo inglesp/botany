@@ -1,4 +1,4 @@
-botany-core
+botany-core>=0.9.0
 dj-database-url
 django
 django-dotenv
