@@ -1,0 +1,35 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+    <h1>{{ user.name }}</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Bot</th>
+          <th>P</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>Points</th>
+          <th>Birthday</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for bot in bots %}
+        <tr>
+          <td>{{ bot.name_and_version }}</td>
+          <td>{{ bot.num_played }}</td>
+          <td>{{ bot.num_wins }}</td>
+          <td>{{ bot.num_draws }}</td>
+          <td>{{ bot.num_losses }}</td>
+          <td>{{ bot.score }}</td>
+          <td>{{ bot.created_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

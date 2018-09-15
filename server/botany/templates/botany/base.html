@@ -24,7 +24,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ml-auto">
             {% if user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="#">My bots</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'user_bots' user_id=request.user.id %}">My bots</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Log out</a></li>
             {% else %}
             <li class="nav-item"><a class="nav-link" href="{% url 'prelogin' %}">Log in</a></li>

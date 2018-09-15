@@ -79,6 +79,12 @@ class Bot(AbastractBotanyModel):
         self.state = "failed"
         self.save()
 
+    def name_and_version(self):
+        if self.version == 0:
+            return self.name
+        else:
+            return f"{self.name} (v{self.version})"
+
     @property
     def is_house_bot(self):
         return self.state == "house"

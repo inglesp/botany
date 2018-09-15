@@ -77,6 +77,14 @@ def bot_head_to_head(request, bot_id, other_bot_id):
     return render(request, "botany/bot_head_to_head.html", ctx)
 
 
+def user_bots(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    bots = user.bots.all()
+
+    ctx = {"user": user, "bots": bots.order_by("-created_at")}
+    return render(request, "botany/user_bots.html", ctx)
+
+
 def game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
