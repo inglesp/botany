@@ -195,21 +195,31 @@ class PlayGameTests(TestCase):
 
         self.assertEqual(result.result_type, ResultType.COMPLETE)
 
+    def test_play_game_when_all_games_played(self):
+        bot1, bot2 = [factories.create_bot() for _ in range(2)]
+
+        for _ in range(5):
+            factories.report_result(bot1.id, bot2.id, 0)
+
+        result = actions.play_game(bot1.id, bot2.id)
+
+        self.assertIsNone(result)
+
 
 class ReportResultTest(TestCase):
+    def build_result(self, score):
+        return Result(
+            result_type=ResultType.COMPLETE,
+            score=score,
+            move_list=[0, 1, 4, 7, 8],
+            traceback=None,
+            invalid_move=None,
+        )
+
     def test_report_result(self):
         bot1, bot2 = [factories.create_bot() for _ in range(2)]
 
-        def build_result(score):
-            return Result(
-                result_type=ResultType.COMPLETE,
-                score=score,
-                move_list=[0, 1, 4, 7, 8],
-                traceback=None,
-                invalid_move=None,
-            )
-
-        actions.report_result(bot1.id, bot2.id, build_result(1))
+        actions.report_result(bot1.id, bot2.id, self.build_result(1))
 
         game = models.Game.objects.get()
 
@@ -218,12 +228,22 @@ class ReportResultTest(TestCase):
         self.assertEqual(game.score, 1)
         self.assertEqual(game.moves, "01478")
 
-        actions.report_result(bot1.id, bot2.id, build_result(-1))
-        actions.report_result(bot2.id, bot1.id, build_result(1))
-        actions.report_result(bot2.id, bot1.id, build_result(0))
+        actions.report_result(bot1.id, bot2.id, self.build_result(-1))
+        actions.report_result(bot2.id, bot1.id, self.build_result(1))
+        actions.report_result(bot2.id, bot1.id, self.build_result(0))
 
         self.assertEqual(bot1.bot1_games.count(), 2)
         self.assertEqual(bot1.bot2_games.count(), 2)
 
         self.assertEqual(bot1.score, -1)
         self.assertEqual(bot2.score, 1)
+
+    def test_report_result_when_all_games_played(self):
+        bot1, bot2 = [factories.create_bot() for _ in range(2)]
+
+        for _ in range(5):
+            factories.report_result(bot1.id, bot2.id, 0)
+
+        actions.report_result(bot1.id, bot2.id, self.build_result(1))
+
+        self.assertEqual(models.Game.objects.count(), 5)

@@ -106,12 +106,16 @@ def play_games_against_house_bots(bot_id):
 def play_game_and_report_result(bot1_id, bot2_id):
     result = play_game(bot1_id, bot2_id)
 
-    # TODO: schedule this to be run by separate worker to minimise chance of race condition
     report_result(bot1_id, bot2_id, result)
 
 
 def play_game(bot1_id, bot2_id):
-    # TODO: check whether there have been enough reported games between bots
+    if (
+        Game.objects.filter(bot1_id=bot1_id, bot2_id=bot2_id).count()
+        == settings.BOTANY_NUM_ROUNDS
+    ):
+        return
+
     # TODO: run game in subprocess and ensure environment variables are not accessible
     game = loader.load_module_from_dotted_path(settings.BOTANY_GAME_MODULE)
 
@@ -130,7 +134,12 @@ def play_game(bot1_id, bot2_id):
 
 
 def report_result(bot1_id, bot2_id, result):
-    # TODO: check whether there have been enough reported games between bots
+    if (
+        Game.objects.filter(bot1_id=bot1_id, bot2_id=bot2_id).count()
+        == settings.BOTANY_NUM_ROUNDS
+    ):
+        return
+
     # TODO: if game not complete, record reason
     moves = "".join(str(move) for move in result.move_list)
     Game.objects.create(
