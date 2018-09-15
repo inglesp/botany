@@ -17,6 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin, AbastractBotanyModel):
     name = models.CharField(max_length=200)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_beginner = models.NullBooleanField()
     api_token = models.CharField(max_length=12, unique=True)
 
     objects = managers.UserManager()

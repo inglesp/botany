@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from botany_core import loader, runner, verifier
 
-from .actions import create_bot, create_user, set_bot_active
+from .actions import create_bot, create_user, set_beginner_flag, set_bot_active
 from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
@@ -80,9 +80,22 @@ def bot_head_to_head(request, bot_id, other_bot_id):
     return render(request, "botany/bot_head_to_head.html", ctx)
 
 
+def user(request, user_id):
+    if request.POST:
+        user = get_object_or_404(User, id=user_id)
+        editable = user == request.user
+
+        if not editable:
+            raise PermissionDenied
+
+        set_beginner_flag(user, request.POST["is_beginner"] == "y")
+
+    return redirect(reverse("user_bots", args=[user_id]))
+
+
 def user_bots(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-    editable = user == request.user
+    bot_user = get_object_or_404(User, id=user_id)
+    editable = bot_user == request.user
 
     if request.POST:
         if not editable:
@@ -93,8 +106,8 @@ def user_bots(request, user_id):
         return redirect(reverse("user_bots", args=[user_id]))
 
     ctx = {
-        "user": user,
-        "bots": user.bots.order_by("-created_at"),
+        "bot_user": bot_user,
+        "bots": bot_user.bots.order_by("-created_at"),
         "editable": editable,
         "bot_img_src": f"botany/img/botany-bot-{random.randint(1, 7)}.png",
     }

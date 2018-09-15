@@ -4,7 +4,9 @@
 {% block content %}
 <div class="row">
   <div class="col-sm">
-    <h1>{{ user.name }}</h1>
+    <h1>{{ bot_user.name }}</h1>
+
+    {% if bots %}
     <table class="table">
       <thead>
         <tr>
@@ -49,6 +51,25 @@
         {% endfor %}
       </tbody>
     </table>
+    {% else %}
+    {% if editable %}
+    <p>You have not submitted any bots yet!</p>
+    {% else %}
+    <p>{{ bot_user.name }} has not submitted any bots yet!</p>
+    {% endif %}
+    {% endif %}
+
+    {% if editable %}
+    <h3>About you</h3>
+    <p>You have been programming for...</p>
+
+    <form action="{% url 'user' user.id %}" method="post" class="form-inline">
+      {% csrf_token %}
+      <input type="hidden" name="user_id" value="{{ user.id }}" />
+      <button name="is_beginner" value="y" type="submit" class="btn btn-{% if user.is_beginner %}dark disabled"{% else %}light"{% endif %}>Less than a year</button>
+      <button name="is_beginner" value="n" type="submit" class="btn btn-{% if user.is_beginner == False %}dark disabled"{% else %}light"{% endif %}>More than a year</button>
+    </form>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

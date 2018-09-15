@@ -17,6 +17,11 @@ def deactivate_user(user):
     user.bots.update(state="inactive")
 
 
+def set_beginner_flag(user, is_beginner):
+    user.is_beginner = is_beginner
+    user.save()
+
+
 def create_house_bot(name, code):
     # This assertion could be removed if house bots were included in
     # unplayed_games_for_bot().
