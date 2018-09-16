@@ -30,4 +30,17 @@
     <p><a href="{% url 'bot_games' bot_id=bot.id %}">All games against {{ bot.name }}</a></p>
   </div>
 </div>
+
+{% if show_code %}
+<div class="row">
+  <div class="col-sm">
+    <h2>The code</h2>
+    <pre>
+      <code>
+{{ bot.code }}
+      </code>
+    </pre>
+</div>
+</div>
+{% endif %}
 {% endblock %}
