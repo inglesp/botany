@@ -1,0 +1,5 @@
+{% if bot.is_house_bot %}
+house
+{% else %}
+<a href="{% url 'user_bots' bot.user_id %}">{{ bot.user_name }}</a>
+{% endif %}

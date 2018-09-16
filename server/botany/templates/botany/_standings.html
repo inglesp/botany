@@ -13,12 +13,7 @@
     {% for bot in standings %}
     <tr>
       <td>
-        {% if bot.is_house_bot %}
-        house
-        {% else %}
-        <a href="{% url 'user_bots' bot.user_id %}">{{ bot.user_name }}</a>
-        {% endif %}
-        : :
+        {% include "botany/_bot_user_link.html" %} : :
         {% if linkto == 'bot' %}
         <a href="{% url linkto bot.id %}">{{ bot.name_and_version }}</a>
         {% elif linkto == 'bot_head_to_head' %}

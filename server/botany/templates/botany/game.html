@@ -12,11 +12,11 @@
     <table class="table table-sm">
       <tr>
         <th>bot1</th>
-        <td><a href="{% url 'user_bots' bot1.user_id %}">{{ bot1.user_name }}</a> : : <a href="{% url 'bot' bot1.id %}">{{ bot1.name_and_version }}</a></td>
+        <td>{% include "botany/_bot_user_link.html" with bot=bot1 %} : : {% include "botany/_bot_link.html" with bot=bot1 %}</td>
       </tr>
       <tr>
         <th>bot2</th>
-        <td><a href="{% url 'user_bots' bot2.user_id %}">{{ bot2.user_name }}</a> : : <a href="{% url 'bot' bot2.id %}">{{ bot2.name_and_version }}</a></td>
+        <td>{% include "botany/_bot_user_link.html" with bot=bot2 %} : : {% include "botany/_bot_link.html" with bot=bot2 %}</td>
       </tr>
       <tr>
         <th>Result</th>

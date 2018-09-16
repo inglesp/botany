@@ -3,11 +3,7 @@
 {% block content %}
 <div class="row">
   <div class="col-sm">
-    <h1>
-      <a href="{% url 'user_bots' bot.user_id %}">{{ bot.user_name }}</a> :: {{ bot.name_and_version }}
-      vs
-      <a href="{% url 'user_bots' other_bot.user_id %}">{{ other_bot.user_name }}</a> :: {{ other_bot.name_and_version }}
-    </h1>
+    <h1>{% include "botany/_full_bot_link.html" %} vs {% include "botany/_full_bot_link.html" with bot=other_bot %}</h1>
 
     <p>{{ bot.name }} has played {{ summary.num_played }} games against {{ other_bot.name }}. ({{ summary.num_wins }} wins / {{ summary.num_draws }} draws / {{ summary.num_losses }} losses).</p>
 

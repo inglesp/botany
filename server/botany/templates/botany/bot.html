@@ -3,7 +3,7 @@
 {% block content %}
 <div class="row">
   <div class="col-sm">
-    <h1><a href="{% url 'user_bots' bot.user_id %}">{{ bot.user_name }}</a> :: {{ bot.name_and_version }}</h1>
+    <h1>{% include "botany/_bot_user_link.html" %} :: {{ bot.name_and_version }}</h1>
 
     <p>This bot has played {{ bot.num_played }} games ({{ bot.num_wins }} wins / {{ bot.num_draws }} draws / {{ bot.num_losses }} losses).</p>
   </div>
