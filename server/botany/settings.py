@@ -34,7 +34,10 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", False))
 
-ALLOWED_HOSTS = ["botany18.pyconuk.org"]
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = ["botany18.pyconuk.org"]
 
 
 AUTH_LOGIN_URL = os.environ["AUTH_LOGIN_URL"]
