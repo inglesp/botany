@@ -185,7 +185,12 @@ def api_setup(request):
 def api_submit(request):
     user = get_object_or_404(User, api_token=request.POST["api_token"])
 
-    bot_code = request.POST["bot_code"]
+    try:
+        print("FILES")
+        bot_code = request.FILES["bot_code"].read()
+    except KeyError:
+        print("POST")
+        bot_code = request.POST["bot_code"]
 
     try:
         verifier.verify_bot_code(bot_code)

@@ -33,7 +33,7 @@ def write_settings(settings):
         json.dump(settings, f, indent=4)
 
 
-def read_bot_code(path):
+def read_and_validate_bot_code(path):
     try:
         with open(path) as f:
             bot_code = f.read()
@@ -56,7 +56,7 @@ Refer to the Botany User Guide for more details
 
 
 def create_bot_module(name, path):
-    bot_code = read_bot_code(path)
+    bot_code = read_and_validate_bot_code(path)
     return loader.create_module_from_str(name, bot_code, path)
 
 

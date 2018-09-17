@@ -49,14 +49,13 @@ def init(origin):
 def submit(path):
     submit_url = utils.get_setting("origin") + "/api/submit/"
     bot_name = os.path.basename(path)
-    bot_code = utils.read_bot_code(path)
+    utils.read_and_validate_bot_code(path)
 
-    data = {
-        "api_token": utils.get_setting("api_token"),
-        "bot_name": bot_name,
-        "bot_code": bot_code,
-    }
-    rsp = requests.post(submit_url, data=data)
+    data = {"api_token": utils.get_setting("api_token"), "bot_name": bot_name}
+
+    with open(path) as bot_file:
+        files = {"bot_code": bot_file}
+        rsp = requests.post(submit_url, data=data, files=files)
 
     if rsp.status_code == 404:
         raise click.UsageError("Could not find user with API token")
