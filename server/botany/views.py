@@ -52,7 +52,7 @@ def bot(request, bot_id):
         "recent_games": recent_games_against_bot(bot),
         "top_of_standings": top_of_standings,
         "bottom_of_standings": bottom_of_standings,
-        "show_code": bot.is_house_bot,
+        "show_code": bot.is_house_bot or request.user.is_superuser,
     }
     return render(request, "botany/bot.html", ctx)
 
