@@ -57,7 +57,7 @@ Refer to the Botany User Guide for more details
 
 def create_bot_module(name, path):
     bot_code = read_bot_code(path)
-    return loader.create_module_from_str(name, bot_code)
+    return loader.create_module_from_str(name, bot_code, path)
 
 
 def load_game_module():
