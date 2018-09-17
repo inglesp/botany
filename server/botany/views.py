@@ -186,10 +186,8 @@ def api_submit(request):
     user = get_object_or_404(User, api_token=request.POST["api_token"])
 
     try:
-        print("FILES")
-        bot_code = request.FILES["bot_code"].read()
+        bot_code = request.FILES["bot_code"].read().decode("utf8")
     except KeyError:
-        print("POST")
         bot_code = request.POST["bot_code"]
 
     try:
