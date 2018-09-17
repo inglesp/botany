@@ -69,7 +69,7 @@ def submit(path):
 @cli.command(short_help="Play game between bots and/or humans")
 @click.argument("path1")
 @click.argument("path2")
-@click.option("--opcode-limit", type=int, default=None)
+@click.option("--opcode-limit", type=int, default=None, help="set to 0 for no limit")
 def play(path1, path2, opcode_limit):
     game = utils.load_game_module()
 
@@ -111,6 +111,9 @@ def play(path1, path2, opcode_limit):
 
     if opcode_limit is None:
         opcode_limit = utils.get_setting("botany_opcode_limit")
+
+    if opcode_limit == 0:
+        opcode_limit = None
 
     if not tracer.opcode_limit_supported:
         print("Opcode limiting not supported in this version of Python")
@@ -171,7 +174,7 @@ def play(path1, path2, opcode_limit):
 @click.argument("pathn", nargs=-1)
 @click.option("--full-output", is_flag=True)
 @click.option("--num-rounds", type=int, default=None)
-@click.option("--opcode-limit", type=int, default=None)
+@click.option("--opcode-limit", type=int, default=None, help="set to 0 for no limit")
 def tournament(path1, path2, pathn, full_output, num_rounds, opcode_limit):
     game = utils.load_game_module()
 
@@ -197,6 +200,9 @@ def tournament(path1, path2, pathn, full_output, num_rounds, opcode_limit):
 
     if opcode_limit is None:
         opcode_limit = utils.get_setting("botany_opcode_limit")
+
+    if opcode_limit == 0:
+        opcode_limit = None
 
     if not tracer.opcode_limit_supported:
         print("Opcode limiting not supported in this version of Python")
