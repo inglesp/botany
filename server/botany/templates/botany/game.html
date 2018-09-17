@@ -25,9 +25,13 @@
       {% if game.details %}
       <tr>
         <th>Details</th>
-        <th>{{ game.details }}</th>
+        <td>{{ game.details }}</td>
       </tr>
       {% endif %}
+      <tr>
+        <th>Moves</th>
+        <td>{{ game.moves }}</td>
+      </tr>
     </table>
   </div>
 
