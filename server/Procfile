@@ -1,5 +1,12 @@
 web: gunicorn botany.wsgi --log-file -
+
 worker1: python manage.py rqworker house main
-worker2: python manage.py rqworker main
+worker2: python manage.py rqworker house main
+worker3: python manage.py rqworker house main
+worker4: python manage.py rqworker house main
+worker5: python manage.py rqworker main
+worker6: python manage.py rqworker main
+worker7: python manage.py rqworker main
+worker8: python manage.py rqworker main
 
 release: python manage.py migrate
