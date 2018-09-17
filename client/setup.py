@@ -22,7 +22,7 @@ if __name__ == "__main__":
         description="Botany client",
         packages=find_packages(where="src"),
         package_dir={"": "src"},
-        install_requires=["botany-core>=0.9.0", "click", "requests"],
+        install_requires=["botany-core>=0.9.1", "click", "requests"],
         entry_points="""
             [console_scripts]
             botany=botany_client.client:cli
