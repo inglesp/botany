@@ -122,7 +122,7 @@ def play_game(bot1_id, bot2_id):
     bot1 = Bot.objects.get(id=bot1_id)
     bot2 = Bot.objects.get(id=bot2_id)
 
-    if bot1.is_inactive or bot2.is_inactive
+    if bot1.is_inactive or bot2.is_inactive:
         return
 
     mod1 = loader.create_module_from_str("mod1", bot1.code)
