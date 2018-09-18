@@ -1,7 +1,10 @@
+import ast
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 
 from . import managers
+from .ast_utils import NodeCounter
 
 
 class AbastractBotanyModel(models.Model):
@@ -57,6 +60,11 @@ class Bot(AbastractBotanyModel):
     version = models.IntegerField()
     code = models.TextField()
     state = models.CharField(max_length=10, choices=STATES)
+
+    is_from_beginner = models.NullBooleanField()
+    is_goldfish = models.NullBooleanField()
+    is_one_hit_wonder = models.NullBooleanField()
+    code_size = models.IntegerField(null=True)
 
     objects = managers.BotManager()
 
@@ -175,6 +183,26 @@ class Bot(AbastractBotanyModel):
     @num_losses.setter
     def num_losses(self, num_losses):
         self._num_losses = num_losses
+
+    def set_flags_etc(self):
+        tree = ast.parse(self.code)
+
+        for stmt in tree.body:
+            if isinstance(stmt, ast.FunctionDef):
+                if stmt.name == "get_next_move":
+                    args = stmt.args
+                    arg_names = [arg.arg for arg in args.args + args.kwonlyargs]
+                    self.is_goldfish = "state" in arg_names
+                    break
+
+        counter = NodeCounter()
+        counter.visit(tree)
+        self.code_size = counter.count
+
+        self.is_one_hit_wonder = self.user.bots.count() == 1
+        self.is_beginner = self.user.is_beginner
+
+        self.save()
 
 
 class Game(AbastractBotanyModel):
