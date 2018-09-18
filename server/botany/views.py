@@ -108,7 +108,8 @@ def user(request, user_id):
 
 def user_bots(request, user_id):
     bot_user = get_object_or_404(User, id=user_id)
-    editable = bot_user == request.user
+    tournament_closed = datetime.now(timezone.utc) > settings.BOTANY_TOURNAMENT_CLOSE_AT
+    editable = bot_user == request.user and not tournament_closed
 
     if request.POST:
         if not editable:
