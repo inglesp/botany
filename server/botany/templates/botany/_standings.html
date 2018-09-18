@@ -7,6 +7,10 @@
       <th>D</th>
       <th>L</th>
       <th>Points</th>
+      <th>Size</th>
+      <th>From beginner</th>
+      <th>One hit wonder</th>
+      <th>Goldfish</th>
     </tr>
   </thead>
   <tbody>
@@ -27,6 +31,10 @@
       <td>{{ bot.num_draws }}</td>
       <td>{{ bot.num_losses }}</td>
       <td>{{ bot.score }}</td>
+      <td>{{ bot.code_size }}</td>
+      <td>{{ bot.is_from_beginner }}</td>
+      <td>{{ bot.is_one_hit_wonder }}</td>
+      <td>{{ bot.is_goldfish }}</td>
     </tr>
     {% endfor %}
   </tbody>
