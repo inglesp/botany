@@ -33,7 +33,7 @@ def index(request):
 
     ctx = {
         "summary": summary(),
-        "standing": standings(),
+        "standings": standings(),
         "tournament_closed": tournament_closed,
     }
     return render(request, "botany/index.html", ctx)
