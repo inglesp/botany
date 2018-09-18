@@ -200,7 +200,7 @@ class Bot(AbastractBotanyModel):
         self.code_size = counter.count
 
         self.is_one_hit_wonder = self.user.bots.count() == 1
-        self.is_beginner = self.user.is_beginner
+        self.is_from_beginner = self.user.is_beginner
 
         self.save()
 
