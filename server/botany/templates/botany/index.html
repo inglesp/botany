@@ -5,6 +5,10 @@
   <div class="col-sm">
     <h1>Welcome to Botany.</h1>
 
+    {% if tournament_closed %}
+    <p>The tournament has now closed.  Thanks for taking part!</p>
+    {% endif %}
+
     <p>
       There have been {{ summary.num_games_between_active_bots }} games between {{ summary.num_active_bots }} active bots.
       ({{ summary.num_games }} games and {{ summary.num_bots }} bots in total.)

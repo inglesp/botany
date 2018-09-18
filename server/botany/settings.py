@@ -11,8 +11,11 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from datetime import datetime, timedelta, timezone
 
 import dj_database_url
+
+bst = timezone(timedelta(hours=1))
 
 # Game settings
 BOTANY_GAME_MODULE = os.environ["BOTANY_GAME_MODULE"]
@@ -20,6 +23,8 @@ BOTANY_GAME_PACKAGE = os.environ["BOTANY_GAME_PACKAGE"]
 BOTANY_NUM_ROUNDS = int(os.environ["BOTANY_NUM_ROUNDS"])
 BOTANY_OPCODE_LIMIT = int(os.environ["BOTANY_OPCODE_LIMIT"])
 
+# TODO read this from environment (and make optional)
+BOTANY_TOURNAMENT_CLOSE_AT = datetime(2018, 9, 18, 13, 30, tzinfo=bst)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

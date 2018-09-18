@@ -1,4 +1,5 @@
 import random
+from datetime import datetime, timezone
 
 from django.conf import settings
 from django.contrib.auth import login, logout
@@ -27,11 +28,13 @@ from .tournament import (
 
 def index(request):
     top_of_standings = standings()[:10]
+    tournament_closed = datetime.now(timezone.utc) > settings.BOTANY_TOURNAMENT_CLOSE_AT
 
     ctx = {
         "summary": summary(),
         "recent_games": recent_games(),
         "top_of_standings": top_of_standings,
+        "tournament_closed": tournament_closed,
     }
     return render(request, "botany/index.html", ctx)
 
@@ -183,6 +186,9 @@ def api_setup(request):
 
 @csrf_exempt
 def api_submit(request):
+    if datetime.now(timezone.utc) > settings.BOTANY_TOURNAMENT_CLOSE_AT:
+        return HttpResponseBadRequest("Tournament has closed")
+
     user = get_object_or_404(User, api_token=request.POST["api_token"])
 
     try:
