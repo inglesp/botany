@@ -24,7 +24,7 @@ BOTANY_NUM_ROUNDS = int(os.environ["BOTANY_NUM_ROUNDS"])
 BOTANY_OPCODE_LIMIT = int(os.environ["BOTANY_OPCODE_LIMIT"])
 
 # TODO read this from environment (and make optional)
-BOTANY_TOURNAMENT_CLOSE_AT = datetime(2018, 9, 18, 13, 30, tzinfo=bst)
+BOTANY_TOURNAMENT_CLOSE_AT = datetime(2018, 9, 18, 14, 30, tzinfo=bst)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
