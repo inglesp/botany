@@ -49,13 +49,22 @@ def bot(request, bot_id):
     standings = list(standings_against_bot(bot))
     top_of_standings = standings[:5]
     bottom_of_standings = standings[-5:]
+    show_code = (
+        bot.is_house_bot
+        or request.user.is_superuser
+        or request.user == bot.user
+        or (
+            bot.is_active
+            and datetime.now(timezone.utc) > settings.BOTANY_TOURNAMENT_CLOSE_AT
+        )
+    )
 
     ctx = {
         "bot": bot,
         "recent_games": recent_games_against_bot(bot),
         "top_of_standings": top_of_standings,
         "bottom_of_standings": bottom_of_standings,
-        "show_code": bot.is_house_bot or request.user.is_superuser,
+        "show_code": show_code,
     }
     return render(request, "botany/bot.html", ctx)
 
