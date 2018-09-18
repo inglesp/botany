@@ -100,7 +100,10 @@ def render_html(board):
         """
 
         for col in range(NCOLS):
-            html += f"<td>{board[col][row]}</td>"
+            if col in available_moves(board) and not check_winner(board):
+                html += f'<td class="connectfour-col active" data-connectfourcol="{col}">{board[col][row]}</td>'
+            else:
+                html += f'<td class="connectfour-col">{board[col][row]}</td>'
 
         html += """
             </tr>

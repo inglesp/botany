@@ -17,6 +17,7 @@ urlpatterns = [
     path("users/<user_id>/", views.user, name="user"),
     path("users/<user_id>/bots/", views.user_bots, name="user_bots"),
     path("games/<game_id>/", views.game, name="game"),
+    path("play/<bot1_id>/<bot2_id>/", views.play, name="play"),
     path("login/", views.prelogin, name="prelogin"),
     path("login/<signed_data>/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),

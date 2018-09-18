@@ -1,0 +1,36 @@
+{% extends 'botany/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md">
+    <h1>{{ title }}</h1>
+
+    {% if result %}
+    <h2>{{ result }}</h2>
+    {% endif %}
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md">
+    <div class="row justify-content-md-center">
+      <style type="text/css">
+        {{ styles|safe }}
+      </style>
+      <div class="board">
+        {{ board|safe }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="post" id="game-moves">
+  {% csrf_token %}
+  <input name="next_move" type="hidden">
+  <input name="moves" value="{{ moves }}" type="hidden">
+  {% if state %}
+  <input name="state" value="{{ state }}" type="hidden">
+  {% endif %}
+</form>
+{% endblock %}

@@ -1,4 +1,7 @@
+import json
 import random
+import urllib
+from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 
 from django.conf import settings
@@ -91,6 +94,105 @@ def bot_head_to_head(request, bot_id, other_bot_id):
 
     ctx = {"bot": bot, "other_bot": other_bot, "games": games, "summary": summary}
     return render(request, "botany/bot_head_to_head.html", ctx)
+
+
+def play(request, bot1_id, bot2_id):
+    if bot1_id == "human":
+        assert bot2_id is not "human"
+    else:
+        bot = get_object_or_404(Bot, id=bot1_id)
+        title = f"human vs {bot.name_and_version()}"
+
+    if bot2_id == "human":
+        assert bot1_id is not "human"
+    else:
+        bot = get_object_or_404(Bot, id=bot2_id)
+        title = f"{bot.name_and_version()} vs human"
+
+    game_mod = loader.load_module_from_dotted_path(settings.BOTANY_GAME_MODULE)
+
+    if request.POST:
+        moves = request.POST["moves"]
+        move_list = [int(m) for m in moves]
+        next_move = int(request.POST["next_move"])
+
+        token = game_mod.TOKENS[len(moves) % 2]
+        other_token = game_mod.TOKENS[(len(moves) + 1) % 2]
+
+        boards = runner.rerun_game(game_mod, move_list)
+        board = boards[-1]
+        assert game_mod.is_valid_move(board, next_move)
+
+        game_mod.make_move(board, next_move, token)
+        move_list.append(next_move)
+        state = None
+
+        if not game_mod.check_winner(board):
+            bot_mod = loader.create_module_from_str("bot", bot.code)
+            fn = bot_mod.get_next_move
+            param_list = runner.get_param_list(fn)
+            if "state" in request.POST:
+                state = json.loads(b64decode(request.POST["state"]))
+
+            all_args = {
+                "board": board,
+                "move_list": move_list,
+                "token": other_token,
+                "state": state,
+            }
+
+            args = {
+                param: value for param, value in all_args.items() if param in param_list
+            }
+
+            rv = fn(**args)
+            try:
+                next_next_move, state = rv
+                print("Got a state")
+            except TypeError:
+                next_next_move, state = rv, None
+                print("Got no state")
+            move_list.append(next_next_move)
+
+        moves = "".join(str(m) for m in move_list)
+
+        qs_dict = {"moves": moves}
+        if state is not None:
+            qs_dict["state"] = b64encode(json.dumps(state).encode("utf8"))
+
+        qs = urllib.parse.urlencode(qs_dict)
+        return redirect(reverse("play", args=[bot1_id, bot2_id]) + f"?{qs}")
+
+    if request.GET.get("moves"):
+        moves = request.GET["moves"]
+        state = request.GET.get("state")
+        move_list = [int(m) for m in request.GET["moves"]]
+        boards = runner.rerun_game(game_mod, move_list)
+        board = boards[-1]
+
+        if game_mod.check_winner(board):
+            token = game_mod.TOKENS[(len(moves) + 1) % 2]
+            result = f"{token} wins"
+        elif len(game_mod.available_moves(board)) == 0:
+            result = "draw"
+        else:
+            result = None
+    else:
+        moves = ""
+        board = game_mod.new_board()
+        state = None
+        result = None
+
+    ctx = {
+        "title": title,
+        "result": result,
+        "moves": moves,
+        "state": state,
+        "board": game_mod.render_html(board),
+        "styles": game_mod.html_styles,
+    }
+
+    return render(request, "botany/play.html", ctx)
 
 
 def user(request, user_id):
