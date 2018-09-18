@@ -21,7 +21,6 @@ from .tournament import (
     all_games_against_bot,
     all_games_between_bots,
     head_to_head_summary,
-    recent_games,
     recent_games_against_bot,
     standings,
     standings_against_bot,
@@ -30,13 +29,11 @@ from .tournament import (
 
 
 def index(request):
-    top_of_standings = standings()[:10]
     tournament_closed = datetime.now(timezone.utc) > settings.BOTANY_TOURNAMENT_CLOSE_AT
 
     ctx = {
         "summary": summary(),
-        "recent_games": recent_games(),
-        "top_of_standings": top_of_standings,
+        "standing": standings(),
         "tournament_closed": tournament_closed,
     }
     return render(request, "botany/index.html", ctx)
