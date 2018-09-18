@@ -192,7 +192,7 @@ class Bot(AbastractBotanyModel):
                 if stmt.name == "get_next_move":
                     args = stmt.args
                     arg_names = [arg.arg for arg in args.args + args.kwonlyargs]
-                    self.is_goldfish = "state" in arg_names
+                    self.is_goldfish = "state" not in arg_names
                     break
 
         counter = NodeCounter()
