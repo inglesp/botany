@@ -39,6 +39,10 @@ def index(request):
     return render(request, "botany/index.html", ctx)
 
 
+def winners(request):
+    return render(request, "botany/winners.html")
+
+
 def full_standings(request):
     ctx = {"standings": standings()}
     return render(request, "botany/full_standings.html", ctx)
