@@ -57,7 +57,6 @@ def init(origin):
     $ botany submit mybot.py""")
 @click.argument("path")
 def submit(path):
-    """This is a longer message explaining how submit works"""
     submit_url = utils.get_setting("origin") + "/api/submit/"
     bot_name = os.path.basename(path)
     utils.read_and_validate_bot_code(path)
