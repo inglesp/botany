@@ -7,7 +7,7 @@ from . import managers
 from .ast_utils import NodeCounter
 
 
-class AbastractBotanyModel(models.Model):
+class AbstractBotanyModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -15,7 +15,7 @@ class AbastractBotanyModel(models.Model):
         abstract = True
 
 
-class User(AbstractBaseUser, PermissionsMixin, AbastractBotanyModel):
+class User(AbstractBaseUser, PermissionsMixin, AbstractBotanyModel):
     email_addr = models.EmailField("email address", unique=True)
     name = models.CharField(max_length=200)
     is_admin = models.BooleanField(default=False)
@@ -47,7 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin, AbastractBotanyModel):
             return None
 
 
-class Bot(AbastractBotanyModel):
+class Bot(AbstractBotanyModel):
     STATES = [
         (state, state)
         for state in ["house", "probation", "failed", "active", "inactive"]
@@ -205,7 +205,7 @@ class Bot(AbastractBotanyModel):
         self.save()
 
 
-class Game(AbastractBotanyModel):
+class Game(AbstractBotanyModel):
     bot1 = models.ForeignKey(Bot, related_name="bot1_games", on_delete=models.CASCADE)
     bot2 = models.ForeignKey(Bot, related_name="bot2_games", on_delete=models.CASCADE)
     score = models.IntegerField()
