@@ -75,7 +75,10 @@ def submit(path):
     if rsp.status_code == 404:
         raise click.UsageError("Could not find user with API token")
     elif not rsp.ok:
-        raise click.UsageError(f"Received {rsp.status_code} from server")
+        msg = f"Received {rsp.status_code} from server"
+        if rsp.text:
+            msg = f"{msg}: {rsp.text}"
+        raise click.UsageError(msg)
 
     print("Bot code submitted successfully!")
 
