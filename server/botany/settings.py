@@ -104,6 +104,7 @@ WSGI_APPLICATION = "botany.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+<<<<<<< HEAD
 DATABASES = {"default": dj_database_url.config(default="postgres://localhost/botany")}
 DATABASES = {
     'default': {
@@ -115,6 +116,10 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+=======
+DATABASES = {"default": dj_database_url.config()}
+
+>>>>>>> 47b871c0b38da5978156bc5061f2ddf29ac6589e
 
 # Queues
 # https://github.com/rq/django-rq
@@ -166,3 +171,14 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
+<<<<<<< HEAD
+=======
+RAVEN_PROJECT = os.getenv("RAVEN_PROJECT")
+RAVEN_PUBLIC_KEY = os.getenv("RAVEN_PUBLIC_KEY")
+RAVEN_PRIVATE_KEY = os.getenv("RAVEN_PRIVATE_KEY")
+
+if RAVEN_PROJECT is not None:
+    RAVEN_CONFIG = {
+        "dsn": f"https://{RAVEN_PUBLIC_KEY}:{RAVEN_PRIVATE_KEY}@sentry.io/{RAVEN_PROJECT}"
+    }
+>>>>>>> 47b871c0b38da5978156bc5061f2ddf29ac6589e
