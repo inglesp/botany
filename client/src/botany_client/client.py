@@ -11,10 +11,21 @@ from . import utils
 
 @click.group()
 def cli():
-    """Botany"""
+    """
+    BOTANY
+
+    Tournament environment for bot games.
+    For more comprehensive documentation and details on how to start
+    visit: https://botany.readthedocs.io/en/latest/.
+    
+    To get short manual of each command type --help after it,
+    for instance:
+
+    $ botany play --help
+    """
 
 
-@cli.command(short_help="Initialise Botany in current directory")
+@cli.command(short_help="Initialise Botany in current directory.")
 @click.argument("origin")
 def init(origin):
     if origin[-1] == "/":
@@ -43,8 +54,12 @@ def init(origin):
     print(f"    pip install {settings['botany_game_package']}")
     print()
 
+@cli.command(help="""Submit bot code.
 
-@cli.command(short_help="Submit bot code")
+    For instance:
+
+    $ botany submit mybot.py
+    """)
 @click.argument("path")
 def submit(path):
     submit_url = utils.get_setting("origin") + "/api/submit/"
@@ -65,7 +80,19 @@ def submit(path):
     print("Bot code submitted successfully!")
 
 
-@cli.command(short_help="Play game between bots and/or humans")
+@cli.command(help="""Play game between bots and/or humans.
+
+    Assuming your bot's code is in a file called bot.py, 
+    you can play against it:
+
+    $ botany play mybot.py human
+
+    You can also play againts other bot:
+
+    $ botany play mybot.py otherbot.py
+
+    Order of the bots does matter!
+    """)
 @click.argument("path1")
 @click.argument("path2")
 @click.option("--opcode-limit", type=int, default=None, help="set to 0 for no limit")
@@ -167,7 +194,16 @@ def play(path1, path2, opcode_limit):
     print()
 
 
-@cli.command(short_help="Run tournament between several bots")
+@cli.command(help="""Run tournament between several bots.
+
+    You can also run a tournament (10 rounds) between several bots:
+
+    $ botany tournament bot1.py bot2.py bot3.py ...
+
+    A tournament must involve at least two bots.
+
+    --full-output flag allows to see full details of every game.
+    """)
 @click.argument("path1")
 @click.argument("path2")
 @click.argument("pathn", nargs=-1)
