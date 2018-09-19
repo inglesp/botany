@@ -15,7 +15,7 @@ def cli():
     BOTANY\n 
     Tournament environment for PyConUK.
     For more detailed documentation and details on how to start
-    visit: https://botany18.pyconuk.org/.
+    visit: https://botany.readthedocs.io/en/latest/.
     \n
     To get short manual of each command type --help after it,
     for instance:\n
