@@ -158,10 +158,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Raven
 
-RAVEN_PROJECT = os.environ["RAVEN_PROJECT"]
-RAVEN_PUBLIC_KEY = os.environ["RAVEN_PUBLIC_KEY"]
-RAVEN_PRIVATE_KEY = os.environ["RAVEN_PRIVATE_KEY"]
+RAVEN_PROJECT = os.getenv("RAVEN_PROJECT")
+RAVEN_PUBLIC_KEY = os.getenv("RAVEN_PUBLIC_KEY")
+RAVEN_PRIVATE_KEY = os.getenv("RAVEN_PRIVATE_KEY")
 
-RAVEN_CONFIG = {
-    "dsn": f"https://{RAVEN_PUBLIC_KEY}:{RAVEN_PRIVATE_KEY}@sentry.io/{RAVEN_PROJECT}"
-}
+if RAVEN_PROJECT is not None:
+    RAVEN_CONFIG = {
+        "dsn": f"https://{RAVEN_PUBLIC_KEY}:{RAVEN_PRIVATE_KEY}@sentry.io/{RAVEN_PROJECT}"
+    }
