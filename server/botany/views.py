@@ -96,6 +96,30 @@ def bot_head_to_head(request, bot_id, other_bot_id):
     ctx = {"bot": bot, "other_bot": other_bot, "games": games, "summary": summary}
     return render(request, "botany/bot_head_to_head.html", ctx)
 
+def _make_bot_move(game_mod,bot_object,board,move_list,token,state):
+    bot_mod = loader.create_module_from_str("bot", bot_object.code)
+    fn = bot_mod.get_next_move
+    param_list = runner.get_param_list(fn)
+    all_args = {
+        "board": board,
+        "move_list": [],
+        "token": token,
+        "state": state,
+        }
+    args = {
+            param: value for param, value in all_args.items() if param in param_list
+        }
+    rv = fn(**args)
+    try:
+        bot_move, state = rv
+        print("Got a state")
+    except TypeError:
+        bot_move, state = rv, None
+        print("Got no state")
+    move_list.append(bot_move)
+    boards = runner.rerun_game(game_mod, move_list)
+    board = boards[-1]
+    return (board,move_list)
 
 def play(request, bot1_id, bot2_id):
     if bot1_id == "human":
@@ -129,31 +153,7 @@ def play(request, bot1_id, bot2_id):
         state = None
 
         if not game_mod.check_winner(board):
-            bot_mod = loader.create_module_from_str("bot", bot.code)
-            fn = bot_mod.get_next_move
-            param_list = runner.get_param_list(fn)
-            if "state" in request.POST:
-                state = json.loads(b64decode(request.POST["state"]))
-
-            all_args = {
-                "board": board,
-                "move_list": move_list,
-                "token": other_token,
-                "state": state,
-            }
-
-            args = {
-                param: value for param, value in all_args.items() if param in param_list
-            }
-
-            rv = fn(**args)
-            try:
-                next_next_move, state = rv
-                print("Got a state")
-            except TypeError:
-                next_next_move, state = rv, None
-                print("Got no state")
-            move_list.append(next_next_move)
+            board, move_list = _make_bot_move(game_mod,bot,board,move_list,other_token,state)
 
         moves = "".join(str(m) for m in move_list)
 
@@ -183,6 +183,9 @@ def play(request, bot1_id, bot2_id):
         board = game_mod.new_board()
         state = None
         result = None
+        if bot1_id != "human":
+            board, move_list = _make_bot_move(game_mod,bot,board,[],"X",state)
+            moves = "".join(str(m) for m in move_list)
 
     ctx = {
         "title": title,
