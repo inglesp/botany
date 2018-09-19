@@ -12,13 +12,15 @@ from . import utils
 @click.group()
 def cli():
     """
-    BOTANY\n 
-    Tournament environment for PyConUK.
-    For more detailed documentation and details on how to start
+    BOTANY
+
+    Tournament environment for bot games.
+    For more comprehensive documentation and details on how to start
     visit: https://botany.readthedocs.io/en/latest/.
-    \n
+    
     To get short manual of each command type --help after it,
-    for instance:\n
+    for instance:
+
     $ botany play --help
     """
 
@@ -52,9 +54,12 @@ def init(origin):
     print(f"    pip install {settings['botany_game_package']}")
     print()
 
-@cli.command(help="""Submit bot code.\n
-    For instance:\n
-    $ botany submit mybot.py""")
+@cli.command(help="""Submit bot code.
+
+    For instance:
+
+    $ botany submit mybot.py
+    """)
 @click.argument("path")
 def submit(path):
     submit_url = utils.get_setting("origin") + "/api/submit/"
@@ -75,11 +80,17 @@ def submit(path):
     print("Bot code submitted successfully!")
 
 
-@cli.command(help="""Play game between bots and/or humans.\n
-    Assuming your bot's code is in a file called bot.py, you can play against it:\n
-    $ botany play mybot.py human\n
-    You can also play againts other bot:\n
-    $ botany play mybot.py otherbot.py\n
+@cli.command(help="""Play game between bots and/or humans.
+
+    Assuming your bot's code is in a file called bot.py, 
+    you can play against it:
+
+    $ botany play mybot.py human
+
+    You can also play againts other bot:
+
+    $ botany play mybot.py otherbot.py
+
     Order of the bots does matter!
     """)
 @click.argument("path1")
@@ -183,10 +194,14 @@ def play(path1, path2, opcode_limit):
     print()
 
 
-@cli.command(help="""Run tournament between several bots.\n
-    You can also run a tournament (10 rounds) between several bots:\n
-    $ botany tournament bot1.py bot2.py bot3.py ...\n
-    A tournament must involve at least two bots.\n
+@cli.command(help="""Run tournament between several bots.
+
+    You can also run a tournament (10 rounds) between several bots:
+
+    $ botany tournament bot1.py bot2.py bot3.py ...
+
+    A tournament must involve at least two bots.
+
     --full-output flag allows to see full details of every game.
     """)
 @click.argument("path1")
