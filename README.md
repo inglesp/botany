@@ -17,12 +17,12 @@ Setup:
 * Ensure Postgres and Redis are installed and running locally
 * Create a virtualenv and run:
   * `pip install -r requirements-dev.txt`
-  * `pip install -r server/requirements-dev.txt`
+  * `pip install -r server/requirements.txt`
 * Copy `server/.env-sample` to `server/.env`
 * You may need to change the `DATABASE_URL` and `REDIS_URL` values in `.env`
   * By default, we expect a Postgres database called `botany` to exist
     * Run `createdb botany`
-* Run database migrations
+* Run database migrations (in `server/`)
   * `python manage.py migrate`
 
 Running the server:
