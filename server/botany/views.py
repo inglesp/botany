@@ -4,6 +4,7 @@ import urllib
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 
+from botany_core import loader, runner, verifier
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
@@ -12,8 +13,6 @@ from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-
-from botany_core import loader, runner, verifier
 
 from .actions import create_bot, create_user, set_beginner_flag, set_bot_active
 from .models import Bot, Game, User
@@ -96,30 +95,29 @@ def bot_head_to_head(request, bot_id, other_bot_id):
     ctx = {"bot": bot, "other_bot": other_bot, "games": games, "summary": summary}
     return render(request, "botany/bot_head_to_head.html", ctx)
 
-def _make_bot_move(game_mod,bot_object,board,move_list,token,state):
+
+def _make_bot_move(game_mod, bot_object, board, move_list, token, state):
     bot_mod = loader.create_module_from_str("bot", bot_object.code)
     fn = bot_mod.get_next_move
     param_list = runner.get_param_list(fn)
-    all_args = {
-        "board": board,
-        "move_list": [],
-        "token": token,
-        "state": state,
-        }
-    args = {
-            param: value for param, value in all_args.items() if param in param_list
-        }
+    all_args = {"board": board, "move_list": [], "token": token, "state": state}
+    args = {param: value for param, value in all_args.items() if param in param_list}
+    print(args)
     rv = fn(**args)
     try:
         bot_move, state = rv
         print("Got a state")
     except TypeError:
-        bot_move, state = rv, None
+        returned = rv
+        print(returned)
+        bot_move = returned
+        state = None
         print("Got no state")
     move_list.append(bot_move)
     boards = runner.rerun_game(game_mod, move_list)
     board = boards[-1]
-    return (board,move_list)
+    return (board, move_list, state)
+
 
 def play(request, bot1_id, bot2_id):
     if bot1_id == "human":
@@ -153,7 +151,9 @@ def play(request, bot1_id, bot2_id):
         state = None
 
         if not game_mod.check_winner(board):
-            board, move_list = _make_bot_move(game_mod,bot,board,move_list,other_token,state)
+            if "state" in request.POST:
+                state = json.loads(b64decode(request.POST["state"]))
+            board, move_list, state = _make_bot_move(game_mod, bot, board, move_list, other_token, state)
 
         moves = "".join(str(m) for m in move_list)
 
@@ -184,7 +184,9 @@ def play(request, bot1_id, bot2_id):
         state = None
         result = None
         if bot1_id != "human":
-            board, move_list = _make_bot_move(game_mod,bot,board,[],"X",state)
+            board, move_list, state = _make_bot_move(
+                game_mod, bot, board, [], "X", state
+            )
             moves = "".join(str(m) for m in move_list)
 
     ctx = {
