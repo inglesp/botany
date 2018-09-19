@@ -1,5 +1,6 @@
-botany-connectfour>=0.1.1
-botany-core>=0.9.0
+botany-connectfour
+botany-noughtsandcrosses
+botany-core
 dj-database-url
 django
 django-dotenv
