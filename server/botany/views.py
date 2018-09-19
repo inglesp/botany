@@ -4,6 +4,7 @@ import urllib
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 
+from botany_core import loader, runner, verifier
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
@@ -12,8 +13,6 @@ from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-
-from botany_core import loader, runner, verifier
 
 from .actions import create_bot, create_user, set_beginner_flag, set_bot_active
 from .models import Bot, Game, User
@@ -112,28 +111,46 @@ def play(request, bot1_id, bot2_id):
 
     game_mod = loader.load_module_from_dotted_path(settings.BOTANY_GAME_MODULE)
 
-    if request.POST:
-        moves = request.POST["moves"]
-        move_list = [int(m) for m in moves]
-        next_move = int(request.POST["next_move"])
+    moves = request.GET.get("moves")
 
-        token = game_mod.TOKENS[len(moves) % 2]
-        other_token = game_mod.TOKENS[(len(moves) + 1) % 2]
+    # check for a game in progress, or a new game with the bot starting
+    get_next_bot_move = False
+    if request.POST:
+        # Human has moved, take state from request
+        moves = request.POST["moves"]
+        next_move = int(request.POST["next_move"])
+        state = request.POST.get("state")
+        if state is not None:
+            state = json.loads(b64decode(state))
+        get_next_bot_move = True
+
+    elif moves is None and bot2_id == "human":
+        # Opening move for the bot, initialise state
+        moves = ""
+        next_move = None
+        state = None
+        get_next_bot_move = True
+
+    if get_next_bot_move:
+        move_list = [int(m) for m in moves]
+        token = game_mod.TOKENS[len(move_list) % 2]
+        other_token = game_mod.TOKENS[(len(move_list) + 1) % 2]
 
         boards = runner.rerun_game(game_mod, move_list)
         board = boards[-1]
-        assert game_mod.is_valid_move(board, next_move)
+        if next_move is not None:
+            assert game_mod.is_valid_move(board, next_move)
+        else:
+            assert bot2_id == "human"
 
-        game_mod.make_move(board, next_move, token)
-        move_list.append(next_move)
-        state = None
+        if next_move is not None:
+            game_mod.make_move(board, next_move, token)
+            move_list.append(next_move)
 
         if not game_mod.check_winner(board):
             bot_mod = loader.create_module_from_str("bot", bot.code)
             fn = bot_mod.get_next_move
             param_list = runner.get_param_list(fn)
-            if "state" in request.POST:
-                state = json.loads(b64decode(request.POST["state"]))
 
             all_args = {
                 "board": board,
@@ -164,10 +181,9 @@ def play(request, bot1_id, bot2_id):
         qs = urllib.parse.urlencode(qs_dict)
         return redirect(reverse("play", args=[bot1_id, bot2_id]) + f"?{qs}")
 
-    if request.GET.get("moves"):
-        moves = request.GET["moves"]
+    if moves:
+        move_list = [int(m) for m in moves]
         state = request.GET.get("state")
-        move_list = [int(m) for m in request.GET["moves"]]
         boards = runner.rerun_game(game_mod, move_list)
         board = boards[-1]
 
