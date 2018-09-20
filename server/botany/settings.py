@@ -104,17 +104,7 @@ WSGI_APPLICATION = "botany.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-#DATABASES = {"default": dj_database_url.config(default="postgres://localhost/botany")}
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'botany',
-        'USER': os.getenv("POSTGRES_USER"),
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-        'HOST': os.getenv("POSTGRES_URL"),
-        'PORT': '5432',
-    }
-}
+DATABASES = {"default": dj_database_url.config(default="postgres://localhost/botany")}
 
 
 # Queues
