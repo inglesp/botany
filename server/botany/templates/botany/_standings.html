@@ -15,7 +15,7 @@
   </thead>
   <tbody>
     {% for bot in standings %}
-    <tr {% if bot.user_id == request.user.id %}class="its_me_class"{% endif %}>
+    <tr {% if request.user.is_authenticated  and bot.user_id == request.user.id %}class="highlight_user"{% endif %}>
       <td>
         {% include "botany/_bot_user_link.html" %} : :
         {% if linkto == 'bot' %}
