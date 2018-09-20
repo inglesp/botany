@@ -1,3 +1,7 @@
 a {
   text-decoration: none;
 }
+
+.its_me_class td {
+	background-color: #eeeeee;
+}
