@@ -304,7 +304,7 @@ def api_setup(request):
 @csrf_exempt
 def api_submit(request):
     if not tournament_state():
-        return HttpResponseBadRequest("Tournament has closed or is not opened yet")
+        return HttpResponseBadRequest("Tournament has closed or is not open yet")
 
     user = get_object_or_404(User, api_token=request.POST["api_token"])
 
