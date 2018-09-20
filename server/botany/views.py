@@ -153,7 +153,9 @@ def play(request, bot1_id, bot2_id):
         if not game_mod.check_winner(board):
             if "state" in request.POST:
                 state = json.loads(b64decode(request.POST["state"]))
-            board, move_list, state = _make_bot_move(game_mod, bot, board, move_list, other_token, state)
+            board, move_list, state = _make_bot_move(
+                game_mod, bot, board, move_list, other_token, state
+            )
 
         moves = "".join(str(m) for m in move_list)
 
