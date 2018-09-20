@@ -27,19 +27,18 @@ from .tournament import (
     summary,
 )
 
-def tournament_state():
-    "Flag saying whether tournament is open (True) or closed (False)"
-    close_condition = datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT
-    start_condition = datetime.now(timezone.utc) > settings.BOTANY_TOURNAMENT_START_AT
-    return close_condition and start_condition
-
+def tournament_is_open():
+    """Has the tournament started and has not yet reached the closing date?"""
+    start = settings.BOTANY_TOURNAMENT_START_AT
+    close = settings.BOTANY_TOURNAMENT_CLOSE_AT
+    return start < datetime.now(timezone.utc) < close
 
 def index(request):
 
     ctx = {
         "summary": summary(),
         "standings": standings(),
-        "tournament_closed": not tournament_state(),
+        "tournament_closed": not tournament_is_open(),
     }
     return render(request, "botany/index.html", ctx)
 
@@ -64,7 +63,7 @@ def bot(request, bot_id):
         or request.user == bot.user
         or (
             bot.is_active
-            and not tournament_state()
+            and not tournament_is_open()
         )
     )
 
@@ -216,7 +215,7 @@ def user(request, user_id):
 
 def user_bots(request, user_id):
     bot_user = get_object_or_404(User, id=user_id)
-    editable = bot_user == request.user and tournament_state()
+    editable = bot_user == request.user and tournament_is_open()
 
     if request.POST:
         if not editable:
@@ -303,7 +302,7 @@ def api_setup(request):
 
 @csrf_exempt
 def api_submit(request):
-    if not tournament_state():
+    if not tournament_is_open():
         return HttpResponseBadRequest("Tournament has closed or is not open yet")
 
     user = get_object_or_404(User, api_token=request.POST["api_token"])

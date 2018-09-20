@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-from datetime import datetime, timedelta, timezone, date
+from datetime import datetime, timedelta, timezone
 
 import dj_database_url
 
@@ -23,13 +23,20 @@ BOTANY_GAME_PACKAGE = os.environ["BOTANY_GAME_PACKAGE"]
 BOTANY_NUM_ROUNDS = int(os.environ["BOTANY_NUM_ROUNDS"])
 BOTANY_OPCODE_LIMIT = int(os.environ["BOTANY_OPCODE_LIMIT"])
 
+# Tournament time constraints in format: '%d/%m/%Y %H:%M'
+# eg. 04/11/2010 16:30.
+# If not given, +/- 1 day is a default.
 BOTANY_TOURNAMENT_START_AT = os.environ.get("BOTANY_TOURNAMENT_START_AT")
 if BOTANY_TOURNAMENT_START_AT is None:
     BOTANY_TOURNAMENT_START_AT = datetime.now(timezone.utc) - timedelta(1)
+else:
+    BOTANY_TOURNAMENT_START_AT = datetime.strptime(BOTANY_TOURNAMENT_START_AT, '%d/%m/%Y %H:%M')
 
 BOTANY_TOURNAMENT_CLOSE_AT = os.environ.get("BOTANY_TOURNAMENT_CLOSE_AT")
 if BOTANY_TOURNAMENT_CLOSE_AT is None:
     BOTANY_TOURNAMENT_CLOSE_AT = datetime.now(timezone.utc) + timedelta(1)
+else:
+    BOTANY_TOURNAMENT_CLOSE_AT = datetime.strptime(BOTANY_TOURNAMENT_CLOSE_AT, '%d/%m/%Y %H:%M')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
