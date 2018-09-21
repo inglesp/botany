@@ -1,3 +1,7 @@
 a {
   text-decoration: none;
 }
+
+.highlight_user td {
+	background-color: #eeeeee;
+}
