@@ -44,7 +44,7 @@ def rerun_game(game, move_list):
     return boards
 
 
-def run_game(game, fn1, fn2, opcode_limit=None, display_board=False):
+def run_game(game, fn1, fn2, opcode_limit=None, display_board=False,move_list=[]):
     def build_result(result_type, score, traceback=None, invalid_move=None):
         return Result(
             result_type=result_type,
@@ -61,13 +61,23 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False):
     states = [None, None]
     winning_scores = [1, -1]
     losing_scores = [-1, 1]
-    board = game.new_board()
-    move_list = []
+    #Create a variable for cycle to allow rerun of odd number of moves
+    the_cycle = [0, 1]
+    #If there is a list of moves, rerun the game
+    if len(move_list)>0:
+        board = rerun_game(game,move_list)[-1]
+        #If the number of moves is odd, player 2 is the next to play
+        if len(move_list) % 2 == 1:
+            the_cycle = [1,0]
+    else:
+        board = game.new_board()
+        move_list = []
+
 
     if display_board:
         print(game.render_text(board))
 
-    for player_ix in itertools.cycle([0, 1]):
+    for player_ix in itertools.cycle(the_cycle):
         token = game.TOKENS[player_ix]
         fn = [fn1, fn2][player_ix]
 
