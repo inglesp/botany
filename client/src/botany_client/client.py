@@ -102,7 +102,7 @@ def submit(path):
 @click.argument("path1")
 @click.argument("path2")
 @click.option("--opcode-limit", type=int, default=None, help="set to 0 for no limit")
-@click.option("--move-list", type=str, default=None, help="list of move")
+@click.option("--move-list", type=str, default=None, help="list of moves")
 def play(path1, path2, opcode_limit,move_list):
     game = utils.load_game_module()
 
@@ -149,14 +149,9 @@ def play(path1, path2, opcode_limit,move_list):
         opcode_limit = None
 
     #Initiate the move list parameter
-    if move_list is None:
-        move_list = []
-    else:
-        assert move_list.isdigit(), "move-list should only consist of integers"
-        move_list = list(move_list)
+    if move_list is not None:
         move_list = [int(move) for move in move_list]
-        assert all(a < game.NCOLS for a in move_list ), f"Move cannot be greater then {game.NCOLS-1}"
-
+        
 
     if not tracer.opcode_limit_supported:
         print("Opcode limiting not supported in this version of Python")
