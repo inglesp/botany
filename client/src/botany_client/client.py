@@ -1,5 +1,8 @@
+import io
 import os
+import pathlib
 import re
+import zipfile
 
 import click
 import requests
@@ -88,8 +91,53 @@ def submit(path):
     print("Bot code submitted successfully!")
 
 
-@cli.command(
-    help="""Play game between bots and/or humans.
+@cli.command(help="""Download final bot code after tournament end into
+
+    For instance:
+
+    $ botany download myfoldername
+    """)
+@click.argument("path")
+def download(path):
+    bots_directory = pathlib.Path(path)
+
+    try:
+        bots_directory.mkdir()
+    except FileExistsError:
+        # if path exists, make sure it's an empty directory
+        if bots_directory.is_dir():
+            dir_iter = bots_directory.iterdir()
+            try:
+                next(dir_iter)
+            except StopIteration:
+                pass # directory empty, we're okay to save files there
+            else:
+                raise click.UsageError(
+                    (f"Unable save files to {bots_directory}"
+                      " - directory already contains files.")
+                )
+
+    headers = {"Authorization": utils.get_setting("api_token")}
+    download_url = utils.get_setting("origin") + "/api/download-bots/"
+
+    rsp = requests.get(download_url, headers=headers)
+
+    if rsp.status_code == 404:
+        raise click.UsageError("Could not find user with API token")
+    elif not rsp.ok:
+        msg = f"Received {rsp.status_code} from server"
+        if rsp.text:
+            msg = f"{msg}: {rsp.text}"
+        raise click.UsageError(msg)
+
+    zip_buffer = io.BytesIO(rsp.content)
+    with zipfile.ZipFile(zip_buffer, "r") as zf:
+        zf.extractall(bots_directory)
+
+    print(f"Bots downloaded successfully to {bots_directory}")
+
+
+@cli.command(help="""Play game between bots and/or humans.
 
     Assuming your bot's code is in a file called bot.py,
     you can play against it:
