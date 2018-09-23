@@ -197,6 +197,32 @@ class DownloadBotCodeTest(TestCase):
         ], bots)
         self.maxDiff = default_maxDiff
 
+    def test_get_bots_renames_duplicates(self):
+        actions.create_house_bot(
+            "centrist.py",
+            self.centrist_code,
+        )
+        anne = actions.create_user("anne@example.com", "Anne Example")
+        annes_bot1 = actions.create_bot(
+            anne,
+            "centrist.py",
+            self.centrist_code
+        )
+        actions.set_bot_active(annes_bot1, anne)
+        bots = botany_download.get_bots()
+
+        # finally do some testing
+        self.assertTrue(hasattr(bots, "__iter__"))
+
+        default_maxDiff = self.maxDiff
+        self.maxDiff = None
+
+        self.assertCountEqual([
+            ("centrist.py", self.centrist_code),
+            ("centrist (1).py", self.centrist_code),
+        ], bots)
+        self.maxDiff = default_maxDiff
+
     def tearDown(self):
         # Delete the zip file created in one of the tests,
         # whether test fails or passes
