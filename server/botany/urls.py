@@ -26,6 +26,11 @@ urlpatterns = [
     path("token/", views.token, name="token"),
     path("api/setup/", views.api_setup, name="api_setup"),
     path("api/submit/", views.api_submit, name="api_submit"),
+    path(
+        "api/download-bots/",
+        views.api_download_bots_code,
+        name="download_bots_code"
+    ),
     path("500/", views.error),
 ]
 

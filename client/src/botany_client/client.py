@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 
 import click
@@ -17,7 +18,7 @@ def cli():
     Tournament environment for bot games.
     For more comprehensive documentation and details on how to start
     visit: https://botany.readthedocs.io/en/latest/.
-    
+
     To get short manual of each command type --help after it,
     for instance:
 
@@ -84,6 +85,41 @@ def submit(path):
         raise click.UsageError(msg)
 
     print("Bot code submitted successfully!")
+
+
+@cli.command(short_help="Download final bot code after tournament end")
+def download():
+    headers = {"Authorization": utils.get_setting("api_token")}
+    download_url = utils.get_setting("origin") + "/api/download-bots/"
+
+    rsp = requests.get(download_url, headers=headers)
+
+    if rsp.status_code == 404:
+        raise click.UsageError("Could not find user with API token")
+    elif not rsp.ok:
+        msg = f"Received {rsp.status_code} from server"
+        if rsp.text:
+            msg = f"{msg}: {rsp.text}"
+        raise click.UsageError(msg)
+
+    bots_data = rsp.json()
+
+    bots_directory = pathlib.Path.cwd() / "tournament-bots"
+
+    try:
+        bots_directory.mkdir()
+    except FileExistsError:
+        print((f"Unable to create directory {bots_directory}"
+                " - perhaps it already exists?"))
+    else:
+
+        for bot in bots_data:
+            file_name = bot["name"]
+            code = bot["code"]
+            with open(bots_directory / file_name, "w") as f:
+                f.write(code)
+
+        print(f"Bots downloaded successfully to {bots_directory}")
 
 
 @cli.command(help="""Play game between bots and/or humans.
