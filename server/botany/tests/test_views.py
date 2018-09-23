@@ -30,8 +30,8 @@ class DownloadBotsCodeViewTest(TestCase):
         with zipfile.ZipFile(zip_buffer, "x") as zip_file:
             zip_file.writestr(file_name, file_content)
 
-        with patch("botany.views.download_active_bots") as download_bots:
-            download_bots.return_value = zip_buffer
+        with patch("botany.views.get_active_bots") as get_active_bots:
+            get_active_bots.return_value = zip_buffer
 
             result = views.download_bots_code(request)
 

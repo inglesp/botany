@@ -92,7 +92,7 @@ class DownloadBotCodeTest(TestCase):
         with patch("botany.download.get_bots") as patched_get_bots:
             patched_get_bots.return_value = bots
 
-            result = botany_download.download_active_bots()
+            result = botany_download.get_active_bots()
 
         # read result (BytesIO buffer) as ZipFile object
         with zipfile.ZipFile(result, "r") as zip_file:
@@ -113,7 +113,7 @@ class DownloadBotCodeTest(TestCase):
         with patch("botany.download.get_bots") as patched_get_bots:
             patched_get_bots.return_value = bots
 
-            result = botany_download.download_active_bots()
+            result = botany_download.get_active_bots()
 
         # save to disk
         with open(self.zip_path, "wb") as zf:

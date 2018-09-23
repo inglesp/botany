@@ -16,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from botany_core import loader, runner, verifier
 
 from .actions import create_bot, create_user, set_beginner_flag, set_bot_active
-from .download import download_active_bots
+from .download import get_active_bots
 from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
@@ -328,7 +328,7 @@ def download_bots_code(request):
     if not request.user.is_authenticated:
         raise PermissionDenied
 
-    zip_buffer = download_active_bots()
+    zip_buffer = get_active_bots()
     response = HttpResponse(
         zip_buffer.getvalue(), content_type="application/zip"
     )

@@ -32,7 +32,7 @@ def get_bots():
 
     return bots_to_return.items()
 
-def download_active_bots():
+def get_active_bots():
     bots = get_bots()
 
     zip_buffer = io.BytesIO()
