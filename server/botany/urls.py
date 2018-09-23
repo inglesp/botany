@@ -15,6 +15,7 @@ urlpatterns = [
         views.bot_head_to_head,
         name="bot_head_to_head",
     ),
+    path("download-bots/", views.download_bots_code, name="download_bots_code"),
     path("users/<user_id>/", views.user, name="user"),
     path("users/<user_id>/bots/", views.user_bots, name="user_bots"),
     path("games/<game_id>/", views.game, name="game"),
