@@ -203,12 +203,20 @@ class DownloadBotCodeTest(TestCase):
             self.centrist_code,
         )
         anne = actions.create_user("anne@example.com", "Anne Example")
-        annes_bot1 = actions.create_bot(
+        annes_bot = actions.create_bot(
             anne,
             "centrist.py",
             self.centrist_code
         )
-        actions.set_bot_active(annes_bot1, anne)
+        actions.set_bot_active(annes_bot, anne)
+        brad = actions.create_user("brad@example.com", "Brad Example")
+        brads_bot = actions.create_bot(
+            brad,
+            "centrist.py",
+            self.centrist_code
+        )
+        actions.set_bot_active(brads_bot, brad)
+
         bots = botany_download.get_bots()
 
         # finally do some testing
@@ -220,6 +228,7 @@ class DownloadBotCodeTest(TestCase):
         self.assertCountEqual([
             ("centrist.py", self.centrist_code),
             ("centrist (1).py", self.centrist_code),
+            ("centrist (2).py", self.centrist_code),
         ], bots)
         self.maxDiff = default_maxDiff
 
