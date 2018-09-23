@@ -18,7 +18,7 @@ will help you know where to look for certain things:
 * :doc:`Tutorials </intro/index>` take you by the hand through a series of
   steps to create your first bot. Start here if you're new.
 
-.. * :doc:`Topic guides </topics/index>` discuss key topics and concepts at a
+* :doc:`Topic guides </topics/index>` discuss key topics and concepts at a
   fairly high level and provide useful background information and explanation.
 
 .. * :doc:`Reference guides </ref/index>` contain technical reference for APIs and
