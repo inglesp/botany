@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to botany's documentation!
+Welcome to Botany's documentation!
 ==================================
 
 Source code can be found at https://github.com/inglesp/botany
@@ -28,3 +28,10 @@ will help you know where to look for certain things:
 .. * :doc:`How-to guides </howto/index>` are recipes. They guide you through the
   steps involved in addressing key problems and use-cases. They are more
   advanced than tutorials and assume some knowledge of how Django works.
+
+
+Contributing to Botany
+======================
+
+If you'd like to be involved in the development of Botany then take a read though
+:doc:`Contributing </internals/index>`.
