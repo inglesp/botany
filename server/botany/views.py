@@ -320,6 +320,11 @@ def api_submit(request):
 
 
 def download_bots_code(request):
+    if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
+        return HttpResponseBadRequest(
+            "Unable to download bots while tournament is still in progress"
+        )
+
     if not request.user.is_authenticated:
         raise PermissionDenied
 

@@ -1,14 +1,18 @@
+from datetime import datetime, timedelta, timezone
 import io
 from unittest.mock import patch
 import zipfile
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
-from django.test import TestCase, RequestFactory
+from django.test import override_settings, TestCase, RequestFactory
 
 from botany import actions, views
 
 
+@override_settings(
+    BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
+)
 class DownloadBotsCodeViewTest(TestCase):
 
     def setUp(self):
@@ -56,3 +60,19 @@ class DownloadBotsCodeViewTest(TestCase):
 
         with self.assertRaises(PermissionDenied):
             views.download_bots_code(request)
+
+    @override_settings(
+        BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(
+            timezone.utc) + timedelta(days=1)
+    )
+    def test_cannot_download_bots_code_before_tournament_ends(self):
+        request = self.factory.get("")
+        request.user = self.user
+
+        response = views.download_bots_code(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.content.decode("utf-8"),
+            "Unable to download bots while tournament is still in progress"
+        )
