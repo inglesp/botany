@@ -133,6 +133,19 @@ class DownloadBotCodeTest(TestCase):
                     self.assertMultiLineEqual(
                         io.TextIOWrapper(code_bytes).read(), code)
 
+    def test_get_active_bots_for_api(self):
+        bots = self.get_dummy_bots()
+        with patch("botany.download.get_bots") as patched_get_bots:
+            patched_get_bots.return_value = bots
+
+            result = botany_download.get_active_bots_for_api()
+
+        self.assertEqual(len(bots), len(result))
+
+        for (filename, code), bot in zip(bots, result):
+            self.assertEqual(bot["name"], filename)
+            self.assertMultiLineEqual(bot["code"], code)
+
     def test_get_bots(self):
         anne = actions.create_user("anne@example.com", "Anne Example")
         brad = actions.create_user("brad@example.com", "Brad Example")

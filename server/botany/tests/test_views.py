@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import io
+import json
 from unittest.mock import patch
 import zipfile
 
@@ -70,6 +71,47 @@ class DownloadBotsCodeViewTest(TestCase):
         request.user = self.user
 
         response = views.download_bots_code(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.content.decode("utf-8"),
+            "Unable to download bots while tournament is still in progress"
+        )
+
+
+@override_settings(
+    BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
+)
+class APIDownloadBotsCodeViewTest(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = actions.create_user("anne@example.com", "Anne Example")
+        self.user.api_token = "TOKEN"
+        self.user.save()
+
+    def test_api_download_bots_code_view(self):
+        request = self.factory.get("")
+        request.META["HTTP_AUTHORIZATION"] =  "TOKEN"
+
+        bots_data = [{"name": "test.py", "code": "test test"}]
+
+        with patch("botany.views.get_active_bots_for_api") as get_active_bots:
+            get_active_bots.return_value = bots_data
+
+            result = views.api_download_bots_code(request)
+
+        self.assertEqual(json.loads(result.content), bots_data)
+
+    @override_settings(
+        BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(
+            timezone.utc) + timedelta(days=1)
+    )
+    def test_cannot_download_bots_code_via_api_before_tournament_ends(self):
+        request = self.factory.get("")
+        request.META["HTTP_AUTHORIZATION"] ="TOKEN"
+
+        response = views.api_download_bots_code(request)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(

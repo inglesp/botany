@@ -16,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from botany_core import loader, runner, verifier
 
 from .actions import create_bot, create_user, set_beginner_flag, set_bot_active
-from .download import get_active_bots
+from .download import get_active_bots, get_active_bots_for_api
 from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
@@ -334,6 +334,19 @@ def download_bots_code(request):
     )
     response["Content-Disposition"] = "attachment; filename=bots.zip"
     return response
+
+
+@csrf_exempt
+def api_download_bots_code(request):
+    if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
+        return HttpResponseBadRequest(
+            "Unable to download bots while tournament is still in progress"
+        )
+
+    # check that user exists with given token
+    get_object_or_404(User, api_token=request.META["HTTP_AUTHORIZATION"])
+
+    return JsonResponse(get_active_bots_for_api(), safe=False)
 
 
 def error(request):
