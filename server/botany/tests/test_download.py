@@ -68,11 +68,7 @@ class DownloadBotCodeTest(TestCase):
             "def get_next_move(board):\n    return 0"
         )
 
-    def get_dummy_bots(self):
-        """
-        Utility to import dummy data - list of bot [filename, code]
-        """
-        return [
+        self.dummy_bots = [
             [
                 "centrist.py",
                 self.centrist_code,
@@ -88,9 +84,8 @@ class DownloadBotCodeTest(TestCase):
         ]
 
     def test_download_active_bots_opens_in_memory(self):
-        bots = self.get_dummy_bots()
         with patch("botany.download.get_bots") as patched_get_bots:
-            patched_get_bots.return_value = bots
+            patched_get_bots.return_value = self.dummy_bots
 
             result = botany_download.get_active_bots()
 
@@ -100,18 +95,17 @@ class DownloadBotCodeTest(TestCase):
             self.assertIsInstance(zip_file, zipfile.ZipFile)
             self.assertEqual(
                 zip_file.namelist(),
-                list(bot[0] for bot in bots)
+                list(bot[0] for bot in self.dummy_bots)
             )
 
-            for filename, code in bots:
+            for filename, code in self.dummy_bots:
                 with zip_file.open(filename) as code_bytes:
                     self.assertMultiLineEqual(
                         io.TextIOWrapper(code_bytes).read(), code)
 
     def test_download_active_bots_saves_as_zip_file(self):
-        bots = self.get_dummy_bots()
         with patch("botany.download.get_bots") as patched_get_bots:
-            patched_get_bots.return_value = bots
+            patched_get_bots.return_value = self.dummy_bots
 
             result = botany_download.get_active_bots()
 
@@ -125,24 +119,23 @@ class DownloadBotCodeTest(TestCase):
             self.assertIsInstance(zip_file, zipfile.ZipFile)
             self.assertEqual(
                 zip_file.namelist(),
-                list(bot[0] for bot in bots)
+                list(bot[0] for bot in self.dummy_bots)
             )
 
-            for filename, code in bots:
+            for filename, code in self.dummy_bots:
                 with zip_file.open(filename) as code_bytes:
                     self.assertMultiLineEqual(
                         io.TextIOWrapper(code_bytes).read(), code)
 
     def test_get_active_bots_for_api(self):
-        bots = self.get_dummy_bots()
         with patch("botany.download.get_bots") as patched_get_bots:
-            patched_get_bots.return_value = bots
+            patched_get_bots.return_value = self.dummy_bots
 
             result = botany_download.get_active_bots_for_api()
 
-        self.assertEqual(len(bots), len(result))
+        self.assertEqual(len(self.dummy_bots), len(result))
 
-        for (filename, code), bot in zip(bots, result):
+        for (filename, code), bot in zip(self.dummy_bots, result):
             self.assertEqual(bot["name"], filename)
             self.assertMultiLineEqual(bot["code"], code)
 
