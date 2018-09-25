@@ -6,6 +6,8 @@
 Welcome to Botany's documentation!
 ==================================
 
+These docs are a work in progress.
+
 Source code can be found at https://github.com/inglesp/botany
 
 
