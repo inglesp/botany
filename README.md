@@ -22,6 +22,7 @@ Setup:
 * You may need to change the `DATABASE_URL` and `REDIS_URL` values in `.env`
   * By default, we expect a Postgres database called `botany` to exist
     * Run `createdb botany`
+
 * Run database migrations (in `server/`)
   * `python manage.py migrate`
 
