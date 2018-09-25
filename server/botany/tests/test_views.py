@@ -8,7 +8,8 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.test import override_settings, TestCase, RequestFactory
 
-from botany import actions, views
+from botany import views
+from botany.tests import factories
 
 
 @override_settings(
@@ -18,7 +19,7 @@ class DownloadBotsCodeViewTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
-        self.user = actions.create_user("anne@example.com", "Anne Example")
+        self.user = factories.create_user("anne@example.com", "Anne Example")
 
     def test_download_bots_code_view(self):
         request = self.factory.get("")
@@ -86,7 +87,7 @@ class APIDownloadBotsCodeViewTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
-        self.user = actions.create_user("anne@example.com", "Anne Example")
+        self.user = factories.create_user("anne@example.com", "Anne Example")
         self.user.api_token = "TOKEN"
         self.user.save()
 

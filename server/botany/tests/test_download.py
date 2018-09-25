@@ -8,6 +8,7 @@ from django.test import TestCase
 
 from botany import actions
 from botany import download as botany_download
+from botany.tests import factories
 
 
 class DownloadBotCodeTest(TestCase):
@@ -140,53 +141,54 @@ class DownloadBotCodeTest(TestCase):
             self.assertMultiLineEqual(bot["code"], code)
 
     def test_get_bots(self):
-        anne = actions.create_user("anne@example.com", "Anne Example")
-        brad = actions.create_user("brad@example.com", "Brad Example")
-        cara = actions.create_user("cara@example.com", "Cara Example")
-        dave = actions.create_user("dave@example.com", "Dave Example")
+        anne = factories.create_user("anne@example.com", "Anne Example")
+        brad = factories.create_user("brad@example.com", "Brad Example")
+        cara = factories.create_user("cara@example.com", "Cara Example")
+        dave = factories.create_user("dave@example.com", "Dave Example")
 
-        actions.create_house_bot(
+        # House bots should be downloaded
+        factories.create_house_bot(
             "centrist.py",
             self.centrist_code,
         )
 
         # Will be marked inactive once annes_bot2 is active, so should not be
         # downloaded
-        annes_bot1 = actions.create_bot(
+        annes_bot1 = factories.create_bot(
             anne,
             "annes_bot.py",
             self.centrist_code
         )
-        actions.set_bot_active(annes_bot1, anne)
-        annes_bot2 = actions.create_bot(
+        # Should be downloaded
+        annes_bot2 = factories.create_bot(
             anne,
             "annes_bot.py",
             self.opportunist_code
         )
-        # should change annes_bot1 to inactive
-        actions.set_bot_active(annes_bot2, anne)
 
-        brads_bot = actions.create_bot(
+        # Failed so should not be downloaded
+        brads_bot = factories.create_bot(
             brad,
             "brads_bot.py",
-            self.bad_code
+            self.bad_code,
+            "probation",
         )
-        # Mark failed so should not be be downloaded
         actions.mark_bot_failed(brads_bot)
 
-        # On probation so should not be be downloaded
-        actions.create_bot(
+        # On probation so should not be downloaded
+        factories.create_bot(
             cara,
             "caras_bot.py",
-            self.anarchist_code
+            self.anarchist_code,
+            "probation",
         )
 
-        daves_bot = actions.create_bot(
+        # Set active so should be downloaded
+        daves_bot = factories.create_bot(
             dave,
             "daves-bot.py",
-            self.antagonist_code
+            self.antagonist_code,
         )
-        actions.set_bot_active(daves_bot, dave)
 
         bots = botany_download.get_bots()
 
@@ -204,24 +206,22 @@ class DownloadBotCodeTest(TestCase):
         self.maxDiff = default_maxDiff
 
     def test_get_bots_renames_duplicates(self):
-        actions.create_house_bot(
+        factories.create_house_bot(
             "centrist.py",
             self.centrist_code,
         )
-        anne = actions.create_user("anne@example.com", "Anne Example")
-        annes_bot = actions.create_bot(
+        anne = factories.create_user("anne@example.com", "Anne Example")
+        annes_bot = factories.create_bot(
             anne,
             "centrist.py",
             self.centrist_code
         )
-        actions.set_bot_active(annes_bot, anne)
-        brad = actions.create_user("brad@example.com", "Brad Example")
-        brads_bot = actions.create_bot(
+        brad = factories.create_user("brad@example.com", "Brad Example")
+        brads_bot = factories.create_bot(
             brad,
             "centrist.py",
             self.centrist_code
         )
-        actions.set_bot_active(brads_bot, brad)
 
         bots = botany_download.get_bots()
 
