@@ -86,7 +86,6 @@ class Bot(AbstractBotanyModel):
             return self.user.name
 
     def set_active(self):
-        self.user.bots.update(state="inactive")
         self.state = "active"
         self.save()
 
