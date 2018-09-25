@@ -2,9 +2,10 @@
 .coverage
 .env
 .hypothesis
+__pycache__
 build
 db.sqlite3
 dist
+docs/_build
 htmlcov
 tmp
-__pycache__
