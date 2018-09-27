@@ -2,6 +2,7 @@
 # so that they can be easily run by the Django test runner.
 
 import itertools
+import re
 import tempfile
 from unittest import TestCase
 
@@ -326,6 +327,16 @@ class RunGameTests(TestCase):
         )
 
         self.assertEqual(result, expected_result)
+
+    def test_re_cache_cleared(self):
+        pattern = "^(..+?)\1+$"
+        key = (str, pattern, 0)
+
+        re.compile(pattern)
+        self.assertIn(key, re._cache)
+
+        run_game(game, get_next_move_1, get_next_move_1)
+        self.assertNotIn(key, re._cache)
 
 
 def get_next_move_1(board):
