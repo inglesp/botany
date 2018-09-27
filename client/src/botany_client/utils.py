@@ -2,7 +2,6 @@ import json
 from functools import lru_cache
 
 import click
-
 from botany_core import loader, verifier
 
 SETTINGS_FILENAME = "botany-settings.json"

@@ -6,10 +6,9 @@ import re
 import tempfile
 from unittest import TestCase
 
-from botany_noughtsandcrosses import game
-
 from botany_core import tracer, verifier
 from botany_core.runner import Result, ResultType, rerun_game, run_game
+from botany_noughtsandcrosses import game
 
 
 class TracerTests(TestCase):

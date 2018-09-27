@@ -179,7 +179,7 @@ def play(request, bot1_id, bot2_id):
             result = "draw"
         else:
             result = None
-    # If not a POST of a GET containing moves, this is a new game: 
+    # If not a POST of a GET containing moves, this is a new game:
     #  - need to create the board and other variables
     #  - have the bot make his first move (if he was the first player)
     else:
