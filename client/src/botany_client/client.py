@@ -102,7 +102,7 @@ def submit(path):
 @click.argument("path1")
 @click.argument("path2")
 @click.option("--opcode-limit", type=int, default=None, help="set to 0 for no limit")
-@click.option("--move-list", type=str, default=None, help="list of moves")
+@click.option("--move-list", type=str, default=None, help="List of moves, but only work if neither bot expects state.")
 def play(path1, path2, opcode_limit,move_list):
     game = utils.load_game_module()
 

@@ -64,7 +64,6 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False,move_list=No
     #Create a variable for cycle to allow rerun of odd number of moves
     player_ixs = [0, 1]
     board = game.new_board()
-    move_list_was_loaded = False
     #If there is a list of moves, rerun the game
     if move_list is not None:
         boards = rerun_game(game,move_list)
@@ -73,7 +72,6 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False,move_list=No
         #Only works for a 2 player game.
         if len(move_list) % 2 == 1:
             player_ixs.reverse()
-        move_list_was_loaded = True
 
 
         next_token = game.TOKENS[player_ixs[0]]
@@ -129,11 +127,6 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False,move_list=No
             json.dumps(state)
         except TypeError:
             return build_result(ResultType.INVALID_STATE, losing_scores[player_ix])
-
-        if move_list_was_loaded and display_board:
-            #The message will only be shown once.
-            move_list_was_loaded = False
-            print("The state of the bot was not taken into account when loading the list of moves.")
 
         states[player_ix] = state
         move_list.append(move)
