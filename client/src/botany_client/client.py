@@ -106,7 +106,8 @@ def submit(path):
 @click.argument("path1")
 @click.argument("path2")
 @click.option("--opcode-limit", type=int, default=None, help="set to 0 for no limit")
-def play(path1, path2, opcode_limit):
+@click.option("--move-list", type=str, default=None, help="List of moves, but only work if neither bot expects state.")
+def play(path1, path2, opcode_limit,move_list):
     game = utils.load_game_module()
 
     def get_next_move_human(board):
@@ -151,6 +152,11 @@ def play(path1, path2, opcode_limit):
     if opcode_limit == 0:
         opcode_limit = None
 
+    #Initiate the move list parameter
+    if move_list is not None:
+        move_list = [int(move) for move in move_list]
+        
+
     if not tracer.opcode_limit_supported:
         print("Opcode limiting not supported in this version of Python")
         print()
@@ -169,7 +175,7 @@ def play(path1, path2, opcode_limit):
         fn2 = wrap_bot_fn(mod2.get_next_move)
 
     result = runner.run_game(
-        game, fn1, fn2, opcode_limit=opcode_limit, display_board=True
+        game, fn1, fn2, opcode_limit=opcode_limit, display_board=True,move_list=move_list   
     )
 
     if result.score == 1:
