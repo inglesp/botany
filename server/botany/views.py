@@ -336,7 +336,6 @@ def download_bots_code(request):
     return response
 
 
-@csrf_exempt
 def api_download_bots_code(request):
     if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
         return HttpResponseBadRequest(
