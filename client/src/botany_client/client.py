@@ -108,9 +108,10 @@ def download(path):
             except StopIteration:
                 pass # directory empty, we're okay to save files there
             else:
-                print((f"Unable save files to {bots_directory}"
-                        " - directory already contains files."))
-                return
+                raise click.UsageError(
+                    (f"Unable save files to {bots_directory}"
+                      " - directory already contains files.")
+                )
 
     headers = {"Authorization": utils.get_setting("api_token")}
     download_url = utils.get_setting("origin") + "/api/download-bots/"
