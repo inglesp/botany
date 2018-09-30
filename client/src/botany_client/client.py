@@ -87,8 +87,31 @@ def submit(path):
     print("Bot code submitted successfully!")
 
 
-@cli.command(short_help="Download final bot code after tournament end")
-def download():
+@cli.command(help="""Download final bot code after tournament end into
+
+    For instance:
+
+    $ botany download myfoldername
+    """)
+@click.argument("path")
+def download(path):
+    bots_directory = pathlib.Path(path)
+
+    try:
+        bots_directory.mkdir()
+    except FileExistsError:
+        # if path exists, make sure it's an empty directory
+        if bots_directory.is_dir():
+            dir_iter = bots_directory.iterdir()
+            try:
+                next(dir_iter)
+            except StopIteration:
+                pass # directory empty, we're okay to save files there
+            else:
+                print((f"Unable save files to {bots_directory}"
+                        " - directory already contains files."))
+                return
+
     headers = {"Authorization": utils.get_setting("api_token")}
     download_url = utils.get_setting("origin") + "/api/download-bots/"
 
@@ -104,22 +127,13 @@ def download():
 
     bots_data = rsp.json()
 
-    bots_directory = pathlib.Path.cwd() / "tournament-bots"
+    for bot in bots_data:
+        file_name = bot["name"]
+        code = bot["code"]
+        with open(bots_directory / file_name, "w") as f:
+            f.write(code)
 
-    try:
-        bots_directory.mkdir()
-    except FileExistsError:
-        print((f"Unable to create directory {bots_directory}"
-                " - perhaps it already exists?"))
-    else:
-
-        for bot in bots_data:
-            file_name = bot["name"]
-            code = bot["code"]
-            with open(bots_directory / file_name, "w") as f:
-                f.write(code)
-
-        print(f"Bots downloaded successfully to {bots_directory}")
+    print(f"Bots downloaded successfully to {bots_directory}")
 
 
 @cli.command(help="""Play game between bots and/or humans.
