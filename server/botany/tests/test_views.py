@@ -6,6 +6,7 @@ import zipfile
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.test import override_settings, TestCase, RequestFactory
 
 from botany import views
@@ -71,13 +72,14 @@ class DownloadBotsCodeViewTest(TestCase):
         request = self.factory.get("")
         request.user = self.user
 
-        response = views.download_bots_code(request)
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response.content.decode("utf-8"),
-            "Unable to download bots while tournament is still in progress"
-        )
+        with self.assertRaises(Http404):
+            response = views.download_bots_code(request)
+        #self.assertEqual(response.status_code, 404)
+        #self.assertEqual(
+        #    response.content.decode("utf-8"),
+        #    "Unable to download bots while tournament is still in progress"
+        #)
 
 
 @override_settings(

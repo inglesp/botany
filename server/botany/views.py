@@ -8,7 +8,12 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseBadRequest, JsonResponse, HttpResponse
+from django.http import (
+    HttpResponseBadRequest,
+    Http404,
+    JsonResponse,
+    HttpResponse,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -321,7 +326,7 @@ def api_submit(request):
 
 def download_bots_code(request):
     if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
-        return HttpResponseBadRequest(
+        raise Http404(
             "Unable to download bots while tournament is still in progress"
         )
 
