@@ -7,6 +7,16 @@ from .models import Bot
 
 def get_bots():
     def increment_name(name):
+        """Adds or increments bracketed number at end of filename
+        eg. "myfile.py" becomes "myfile (1).py" and "myfile (1).py" becomes
+        "myfile (2).py"
+
+        Arguments:
+        name -- string
+
+        Returns:
+        string
+        """
         file_name, file_extension = name.rsplit(".", 1)
 
         match = re.match(r".+\((\d+)\)", file_name)
