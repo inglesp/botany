@@ -75,11 +75,6 @@ class DownloadBotsCodeViewTest(TestCase):
 
         with self.assertRaises(Http404):
             response = views.download_bots_code(request)
-        #self.assertEqual(response.status_code, 404)
-        #self.assertEqual(
-        #    response.content.decode("utf-8"),
-        #    "Unable to download bots while tournament is still in progress"
-        #)
 
 
 @override_settings(
