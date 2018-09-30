@@ -29,7 +29,7 @@ urlpatterns = [
     path(
         "api/download-bots/",
         views.api_download_bots_code,
-        name="download_bots_code"
+        name="api_download_bots_code"
     ),
     path("500/", views.error),
 ]
