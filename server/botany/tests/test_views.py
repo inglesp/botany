@@ -72,9 +72,8 @@ class DownloadBotsCodeViewTest(TestCase):
         request = self.factory.get("")
         request.user = self.user
 
-
         with self.assertRaises(Http404):
-            response = views.download_bots_code(request)
+            views.download_bots_code(request)
 
 
 @override_settings(
@@ -90,7 +89,7 @@ class APIDownloadBotsCodeViewTest(TestCase):
 
     def test_api_download_bots_code_view(self):
         request = self.factory.get("")
-        request.META["HTTP_AUTHORIZATION"] =  "TOKEN"
+        request.META["HTTP_AUTHORIZATION"] = "TOKEN"
 
         bots_data = [{"name": "test.py", "code": "test test"}]
 
@@ -107,7 +106,7 @@ class APIDownloadBotsCodeViewTest(TestCase):
     )
     def test_cannot_download_bots_code_via_api_before_tournament_ends(self):
         request = self.factory.get("")
-        request.META["HTTP_AUTHORIZATION"] ="TOKEN"
+        request.META["HTTP_AUTHORIZATION"] = "TOKEN"
 
         response = views.api_download_bots_code(request)
 
