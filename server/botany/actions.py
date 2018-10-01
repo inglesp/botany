@@ -1,7 +1,6 @@
+from botany_core import loader, runner
 from django.conf import settings
 from django.db import transaction
-
-from botany_core import loader, runner
 
 from . import scheduler
 from .models import Bot, Game, User
@@ -44,6 +43,7 @@ def create_bot(user, name, code):
 def set_bot_active(bot, user):
     assert bot.is_under_probation or bot.is_inactive
     assert bot.user == user
+    user.bots.active_bots().update(state="inactive")
     bot.set_active()
     schedule_unplayed_games_for_bot(bot)
 

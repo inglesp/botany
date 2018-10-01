@@ -1,7 +1,7 @@
+from botany_core.runner import Result, ResultType
 from django.test import TestCase, override_settings
 
 from botany import actions, models, scheduler
-from botany_core.runner import Result, ResultType
 
 from . import factories
 
@@ -67,16 +67,26 @@ class SetBotActiveTests(TestCase):
     def test_set_bot_active(self):
         user = factories.create_user(num_bots=2)
         bot1, bot2 = user.bots.order_by("id")
-        self.assertFalse(bot1.is_active)
+        bot3 = factories.create_bot(user, state="probation")
+        actions.mark_bot_failed(bot3)
+        bot4 = factories.create_bot(user, state="probation")
+
+        self.assertTrue(bot1.is_inactive)
         self.assertTrue(bot2.is_active)
+        self.assertTrue(bot3.is_failed)
+        self.assertTrue(bot4.is_under_probation)
 
         actions.set_bot_active(bot1, user)
 
         bot1.refresh_from_db()
         bot2.refresh_from_db()
+        bot3.refresh_from_db()
+        bot4.refresh_from_db()
 
         self.assertTrue(bot1.is_active)
-        self.assertFalse(bot2.is_active)
+        self.assertTrue(bot2.is_inactive)
+        self.assertTrue(bot3.is_failed)
+        self.assertTrue(bot4.is_under_probation)
 
 
 class MarkBotAsFailedTests(TestCase):
