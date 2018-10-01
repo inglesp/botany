@@ -16,6 +16,49 @@ YESTERDAY = datetime.now(timezone.utc) - timedelta(days=1)
 TOMORROW = datetime.now(timezone.utc) + timedelta(days=1)
 
 
+@override_settings(BOTANY_TOURNAMENT_CLOSE_AT=TOMORROW)
+class APISubmitViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = factories.create_user("anne@example.com", "Anne Example")
+        self.user.api_token = "TOKEN"
+        self.user.save()
+
+    def test_request_with_valid_token_receives_200(self):
+        data = {
+            "bot_name": "bot.py",
+            "bot_code": factories.bot_code("randobot")
+        }
+
+        request = self.factory.post("", data=data)
+        request.META["HTTP_AUTHORIZATION"] = "TOKEN"
+
+        response = views.api_submit(request)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_request_with_no_token_receives_401(self):
+        request = self.factory.post("", data={})
+
+        response = views.api_submit(request)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.content.decode("utf-8"), "API token not provided or empty"
+        )
+
+    def test_request_with_invalid_token_receives_401(self):
+        request = self.factory.post("")
+        request.META["HTTP_AUTHORIZATION"] = "WRONG-TOKEN"
+
+        response = views.api_submit(request)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.content.decode("utf-8"), "Invalid API token"
+        )
+
+
 class DownloadBotsCodeBaseTestCase(TestCase):
     # Base test case for all download views
 
@@ -118,6 +161,27 @@ class APIDownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
         self.assertEqual(
             result,
             "Return value of _download_bots_code"
+        )
+
+    def test_request_with_no_token_receives_401(self):
+        request = self.factory.get("")
+
+        response = views.api_download_bots_code(request)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.content.decode("utf-8"), "API token not provided or empty"
+        )
+
+    def test_request_with_invalid_token_receives_401(self):
+        request = self.factory.get("")
+        request.META["HTTP_AUTHORIZATION"] = "WRONG-TOKEN"
+
+        response = views.api_download_bots_code(request)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.content.decode("utf-8"), "Invalid API token"
         )
 
     @override_settings(BOTANY_TOURNAMENT_CLOSE_AT=TOMORROW)

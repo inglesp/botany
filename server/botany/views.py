@@ -34,6 +34,13 @@ from .tournament import (
 )
 
 
+class HttpResponseUnauthorized(HttpResponse):
+    """Should technically set WWW-Authenticate header, but would then need to
+    specify auth scheme, realm etc. Not strictly necessary.
+    """
+    status_code = 401
+
+
 class TOURNAMENT_STATE(Enum):
     BEFORE = -1
     CLOSED = 0
@@ -336,7 +343,14 @@ def api_submit(request):
     if get_tournament_state() == TOURNAMENT_STATE.CLOSED:
         return HttpResponseBadRequest("Tournament has closed.")
 
-    user = get_object_or_404(User, api_token=request.POST["api_token"])
+    api_token = request.META.get("HTTP_AUTHORIZATION", "")
+    if api_token == "":
+        return HttpResponseUnauthorized("API token not provided or empty")
+
+    try:
+        user = User.objects.get(api_token=api_token)
+    except User.DoesNotExist:
+        return HttpResponseUnauthorized("Invalid API token")
 
     try:
         bot_code = request.FILES["bot_code"].read().decode("utf8")
@@ -380,7 +394,14 @@ def api_download_bots_code(request):
         )
 
     # check that user exists with given token
-    get_object_or_404(User, api_token=request.META["HTTP_AUTHORIZATION"])
+    api_token = request.META.get("HTTP_AUTHORIZATION", "")
+    if api_token == "":
+        return HttpResponseUnauthorized("API token not provided or empty")
+
+    try:
+        User.objects.get(api_token=api_token)
+    except User.DoesNotExist:
+        return HttpResponseUnauthorized("Invalid API token")
 
     return _download_bots_code()
 
