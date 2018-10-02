@@ -1,6 +1,7 @@
 import json
 import random
 import urllib
+from enum import Enum
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 
@@ -27,18 +28,31 @@ from .tournament import (
     summary,
 )
 
-def tournament_is_open():
+
+class TOURNAMENT_STATE(Enum):
+    BEFORE = -1
+    CLOSED = 0
+    OPEN = 1
+
+
+def get_tournament_state():
     """Has the tournament started and has not yet reached the closing date?"""
     start = settings.BOTANY_TOURNAMENT_START_AT
     close = settings.BOTANY_TOURNAMENT_CLOSE_AT
-    return start < datetime.now(timezone.utc) < close
+    if datetime.now(timezone.utc) < start:
+        return TOURNAMENT_STATE.BEFORE.value
+    if datetime.now(timezone.utc) > close:
+        return TOURNAMENT_STATE.CLOSED.value
+    return TOURNAMENT_STATE.OPEN.value
+
 
 def index(request):
 
     ctx = {
         "summary": summary(),
         "standings": standings(),
-        "tournament_closed": not tournament_is_open(),
+        "tournament_closed": get_tournament_state() == TOURNAMENT_STATE.CLOSED.value,
+        "tournament_before": get_tournament_state() == TOURNAMENT_STATE.BEFORE.value
     }
     return render(request, "botany/index.html", ctx)
 
@@ -63,7 +77,7 @@ def bot(request, bot_id):
         or request.user == bot.user
         or (
             bot.is_active
-            and not tournament_is_open()
+            and get_tournament_state() != TOURNAMENT_STATE.OPEN.value
         )
     )
 
@@ -215,7 +229,7 @@ def user(request, user_id):
 
 def user_bots(request, user_id):
     bot_user = get_object_or_404(User, id=user_id)
-    editable = bot_user == request.user and tournament_is_open()
+    editable = bot_user == request.user and get_tournament_state() == TOURNAMENT_STATE.OPEN.value
 
     if request.POST:
         if not editable:
@@ -302,8 +316,11 @@ def api_setup(request):
 
 @csrf_exempt
 def api_submit(request):
-    if not tournament_is_open():
-        return HttpResponseBadRequest("Tournament has closed or is not open yet")
+    if get_tournament_state() == TOURNAMENT_STATE.BEFORE.value:
+        return HttpResponseBadRequest("Tournament is not open yet.")
+
+    if get_tournament_state() == TOURNAMENT_STATE.CLOSED.value:
+        return HttpResponseBadRequest("Tournament has closed.")
 
     user = get_object_or_404(User, api_token=request.POST["api_token"])
 
