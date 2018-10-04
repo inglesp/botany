@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import io
+from unittest.mock import patch
 import zipfile
 
 from django.contrib.auth.models import AnonymousUser
@@ -68,24 +69,17 @@ class DownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
     def test_download_bots_code_view(self):
         request = self.factory.get("")
         request.user = self.user
-        result = views.download_bots_code(request)
 
-        self.assertEqual(result["Content-Type"], "application/zip")
+        with patch("botany.views._download_bots_code") as _download_bots_code:
+            _download_bots_code.return_value = \
+                "Return value of _download_bots_code"
+
+            result = views.download_bots_code(request)
+
         self.assertEqual(
-            result["Content-Disposition"],
-            "attachment; filename=bots.zip"
+            result,
+            "Return value of _download_bots_code"
         )
-
-        # test that we can process response as a zipfile
-        result_buffer = io.BytesIO(result.getvalue())
-        with zipfile.ZipFile(result_buffer, "r") as zf:
-            self.assertEqual(zf.namelist(), ["annes_bot.py", "brads_bot.py"])
-            for bot in self.test_data:
-                with zf.open(bot["name"]) as test_file:
-                    self.assertEqual(
-                        io.TextIOWrapper(test_file).read(),
-                        bot["code"]
-                    )
 
     def test_cannot_download_bots_code_anonymously(self):
         request = self.factory.get("")
@@ -119,24 +113,17 @@ class APIDownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
     def test_api_download_bots_code_view(self):
         request = self.factory.get("")
         request.META["HTTP_AUTHORIZATION"] = "TOKEN"
-        result = views.api_download_bots_code(request)
 
-        self.assertEqual(result["Content-Type"], "application/zip")
+        with patch("botany.views._download_bots_code") as _download_bots_code:
+            _download_bots_code.return_value = \
+                "Return value of _download_bots_code"
+
+            result = views.api_download_bots_code(request)
+
         self.assertEqual(
-            result["Content-Disposition"],
-            "attachment; filename=bots.zip"
+            result,
+            "Return value of _download_bots_code"
         )
-
-        # test that we can process response as a zipfile
-        result_buffer = io.BytesIO(result.getvalue())
-        with zipfile.ZipFile(result_buffer, "r") as zf:
-            self.assertEqual(zf.namelist(), ["annes_bot.py", "brads_bot.py"])
-            for bot in self.test_data:
-                with zf.open(bot["name"]) as test_file:
-                    self.assertEqual(
-                        io.TextIOWrapper(test_file).read(),
-                        bot["code"]
-                    )
 
     @override_settings(
         BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(
