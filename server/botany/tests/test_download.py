@@ -106,12 +106,12 @@ class DownloadBotCodeTest(TestCase):
         self.maxDiff = default_maxDiff
 
     def test_get_bots_renames_duplicates(self):
-        annes_bot3 = factories.create_bot(
+        factories.create_bot(
             self.anne,
             "randobot.py",
             "# Anne's bot mk3"
         )
-        daves_bot2 = factories.create_bot(
+        factories.create_bot(
             self.dave,
             "randobot.py",
             "# Dave's 2nd bot"
