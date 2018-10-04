@@ -49,7 +49,9 @@ class DownloadBotsCodeHelperFunctionTest(DownloadBotsCodeBaseTestCase):
         # test that we can process response as a zipfile
         result_buffer = io.BytesIO(result.getvalue())
         with zipfile.ZipFile(result_buffer, "r") as zf:
-            self.assertEqual(zf.namelist(), ["annes_bot.py", "brads_bot.py"])
+            self.assertCountEqual(
+                zf.namelist(), ["annes_bot.py", "brads_bot.py"]
+            )
             for bot in self.test_data:
                 with zf.open(bot["name"]) as test_file:
                     self.assertEqual(
