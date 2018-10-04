@@ -363,7 +363,7 @@ def api_download_bots_code(request):
     # check that user exists with given token
     get_object_or_404(User, api_token=request.META["HTTP_AUTHORIZATION"])
 
-    return JsonResponse(get_active_bots_for_api(), safe=False)
+    return _download_bots_code()
 
 
 def error(request):

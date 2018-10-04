@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 import io
-import json
 import zipfile
 
 from django.contrib.auth.models import AnonymousUser
@@ -37,6 +36,7 @@ class DownloadBotsCodeBaseTestCase(TestCase):
     BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
 )
 class DownloadBotsCodeHelperFunctionTest(DownloadBotsCodeBaseTestCase):
+
     def test_download_bots_code_helper_function(self):
         result = views._download_bots_code()
 
@@ -119,15 +119,22 @@ class APIDownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
         request.META["HTTP_AUTHORIZATION"] = "TOKEN"
         result = views.api_download_bots_code(request)
 
-        default_maxDiff = self.maxDiff
-        self.maxDiff = None
-
+        self.assertEqual(result["Content-Type"], "application/zip")
         self.assertEqual(
-            json.loads(result.content),
-            self.test_data
+            result["Content-Disposition"],
+            "attachment; filename=bots.zip"
         )
 
-        self.maxDiff = default_maxDiff
+        # test that we can process response as a zipfile
+        result_buffer = io.BytesIO(result.getvalue())
+        with zipfile.ZipFile(result_buffer, "r") as zf:
+            self.assertEqual(zf.namelist(), ["annes_bot.py", "brads_bot.py"])
+            for bot in self.test_data:
+                with zf.open(bot["name"]) as test_file:
+                    self.assertEqual(
+                        io.TextIOWrapper(test_file).read(),
+                        bot["code"]
+                    )
 
     @override_settings(
         BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(
