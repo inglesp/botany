@@ -36,6 +36,31 @@ class DownloadBotsCodeBaseTestCase(TestCase):
 @override_settings(
     BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
 )
+class DownloadBotsCodeHelperFunctionTest(DownloadBotsCodeBaseTestCase):
+    def test_download_bots_code_helper_function(self):
+        result = views._download_bots_code()
+
+        self.assertEqual(result["Content-Type"], "application/zip")
+        self.assertEqual(
+            result["Content-Disposition"],
+            "attachment; filename=bots.zip"
+        )
+
+        # test that we can process response as a zipfile
+        result_buffer = io.BytesIO(result.getvalue())
+        with zipfile.ZipFile(result_buffer, "r") as zf:
+            self.assertEqual(zf.namelist(), ["annes_bot.py", "brads_bot.py"])
+            for bot in self.test_data:
+                with zf.open(bot["name"]) as test_file:
+                    self.assertEqual(
+                        io.TextIOWrapper(test_file).read(),
+                        bot["code"]
+                    )
+
+
+@override_settings(
+    BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
+)
 class DownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
 
     def test_download_bots_code_view(self):

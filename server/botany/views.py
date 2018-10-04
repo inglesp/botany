@@ -333,6 +333,15 @@ def api_submit(request):
     return JsonResponse({})
 
 
+def _download_bots_code():
+    zip_buffer = get_active_bots()
+    response = HttpResponse(
+        zip_buffer.getvalue(), content_type="application/zip"
+    )
+    response["Content-Disposition"] = "attachment; filename=bots.zip"
+    return response
+
+
 def download_bots_code(request):
     if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
         raise Http404(
@@ -342,12 +351,7 @@ def download_bots_code(request):
     if not request.user.is_authenticated:
         raise PermissionDenied
 
-    zip_buffer = get_active_bots()
-    response = HttpResponse(
-        zip_buffer.getvalue(), content_type="application/zip"
-    )
-    response["Content-Disposition"] = "attachment; filename=bots.zip"
-    return response
+    return _download_bots_code()
 
 
 def api_download_bots_code(request):
