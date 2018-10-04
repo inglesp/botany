@@ -1,6 +1,8 @@
+import io
 import os
 import pathlib
 import re
+import zipfile
 
 import click
 import requests
@@ -128,13 +130,9 @@ def download(path):
             msg = f"{msg}: {rsp.text}"
         raise click.UsageError(msg)
 
-    bots_data = rsp.json()
-
-    for bot in bots_data:
-        file_name = bot["name"]
-        code = bot["code"]
-        with open(bots_directory / file_name, "w") as f:
-            f.write(code)
+    zip_buffer = io.BytesIO(rsp.content)
+    with zipfile.ZipFile(zip_buffer, "r") as zf:
+        zf.extractall(bots_directory)
 
     print(f"Bots downloaded successfully to {bots_directory}")
 
