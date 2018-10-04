@@ -109,7 +109,6 @@ class APIDownloadBotsCodeViewTest(TestCase):
         default_maxDiff = self.maxDiff
         self.maxDiff = None
 
-        print(len(json.loads(result.content)))
         self.assertEqual(
             json.loads(result.content),
             test_data
