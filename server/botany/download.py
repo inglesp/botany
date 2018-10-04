@@ -42,6 +42,7 @@ def get_bots():
 
     return bots_to_return.items()
 
+
 def get_active_bots():
     bots = get_bots()
 
@@ -52,8 +53,3 @@ def get_active_bots():
             zip_file.writestr(name, code)
 
     return zip_buffer
-
-def get_active_bots_for_api():
-    bots = get_bots()
-
-    return [{"name": name, "code": code} for name, code in bots]

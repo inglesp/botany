@@ -20,7 +20,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from .actions import create_bot, create_user, set_beginner_flag, set_bot_active
-from .download import get_active_bots, get_active_bots_for_api
+from .download import get_active_bots
 from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
