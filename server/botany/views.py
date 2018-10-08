@@ -10,12 +10,18 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.core import signing
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import (
+    HttpResponseBadRequest,
+    Http404,
+    JsonResponse,
+    HttpResponse,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from .actions import create_bot, create_user, set_beginner_flag, set_bot_active
+from .download import get_active_bots
 from .models import Bot, Game, User
 from .tournament import (
     all_games_against_bot,
@@ -344,6 +350,39 @@ def api_submit(request):
 
     create_bot(user, request.POST["bot_name"], bot_code)
     return JsonResponse({})
+
+
+def _download_bots_code():
+    zip_buffer = get_active_bots()
+    response = HttpResponse(
+        zip_buffer.getvalue(), content_type="application/zip"
+    )
+    response["Content-Disposition"] = "attachment; filename=bots.zip"
+    return response
+
+
+def download_bots_code(request):
+    if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
+        raise Http404(
+            "Unable to download bots while tournament is still in progress"
+        )
+
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
+    return _download_bots_code()
+
+
+def api_download_bots_code(request):
+    if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
+        return HttpResponseBadRequest(
+            "Unable to download bots while tournament is still in progress"
+        )
+
+    # check that user exists with given token
+    get_object_or_404(User, api_token=request.META["HTTP_AUTHORIZATION"])
+
+    return _download_bots_code()
 
 
 def error(request):

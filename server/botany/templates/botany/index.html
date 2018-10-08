@@ -11,7 +11,7 @@
     {% endif %}
 
     {% if tournament_closed %}
-    <p>The tournament has now closed.</p>
+    <p>The tournament has now closed.{% if user.is_authenticated %} You can now <a href="{% url 'download_bots_code' %}">download the code</a> for all the bots.{% endif %}</p>
     <p>Thanks to everyone who took part and congratulations to <a href="/winners/">the winners</a>.</p>
     {% endif %}
 
