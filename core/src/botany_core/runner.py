@@ -1,6 +1,7 @@
 import inspect
 import itertools
 import json
+import re
 import traceback
 from copy import copy, deepcopy
 from enum import Enum
@@ -45,6 +46,8 @@ def rerun_game(game, move_list):
 
 
 def run_game(game, fn1, fn2, opcode_limit=None, display_board=False, move_list=None):
+    re.purge()  # See https://github.com/inglesp/botany/issues/48.
+
     def build_result(result_type, score, traceback=None, invalid_move=None):
         return Result(
             result_type=result_type,
@@ -62,9 +65,11 @@ def run_game(game, fn1, fn2, opcode_limit=None, display_board=False, move_list=N
     winning_scores = [1, -1]
     losing_scores = [-1, 1]
     player_ixs = [0, 1]
-    board = game.new_board()
 
-    if move_list is not None:
+    if move_list is None:
+        board = game.new_board()
+        move_list = []
+    else:
         # If there is a list of moves, rerun the game
         boards = rerun_game(game, move_list)
         board = boards[-1]
