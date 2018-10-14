@@ -81,7 +81,7 @@ def submit(path):
         files = {"bot_code": bot_file}
         rsp = requests.post(submit_url, data=data, headers=headers, files=files)
 
-    if rsp.status_code == 404:
+    if rsp.status_code == 401:
         raise click.UsageError("Could not find user with API token")
     elif not rsp.ok:
         msg = f"Received {rsp.status_code} from server"
@@ -123,7 +123,7 @@ def download(path):
 
     rsp = requests.get(download_url, headers=headers)
 
-    if rsp.status_code == 404:
+    if rsp.status_code == 401:
         raise click.UsageError("Could not find user with API token")
     elif not rsp.ok:
         msg = f"Received {rsp.status_code} from server"
