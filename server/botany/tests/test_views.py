@@ -12,6 +12,10 @@ from botany import views
 from botany.tests import factories
 
 
+YESTERDAY = datetime.now(timezone.utc) - timedelta(days=1)
+TOMORROW = datetime.now(timezone.utc) + timedelta(days=1)
+
+
 class DownloadBotsCodeBaseTestCase(TestCase):
     # Base test case for all download views
 
@@ -33,9 +37,7 @@ class DownloadBotsCodeBaseTestCase(TestCase):
         factories.create_bot(brad, **(self.test_data[1]))
 
 
-@override_settings(
-    BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
-)
+@override_settings(BOTANY_TOURNAMENT_CLOSE_AT=YESTERDAY)
 class DownloadBotsCodeHelperFunctionTest(DownloadBotsCodeBaseTestCase):
 
     def test_download_bots_code_helper_function(self):
@@ -61,9 +63,7 @@ class DownloadBotsCodeHelperFunctionTest(DownloadBotsCodeBaseTestCase):
                     )
 
 
-@override_settings(
-    BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
-)
+@override_settings(BOTANY_TOURNAMENT_CLOSE_AT=YESTERDAY)
 class DownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
 
     def test_download_bots_code_view(self):
@@ -88,10 +88,7 @@ class DownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
         with self.assertRaises(PermissionDenied):
             views.download_bots_code(request)
 
-    @override_settings(
-        BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(
-            timezone.utc) + timedelta(days=1)
-    )
+    @override_settings(BOTANY_TOURNAMENT_CLOSE_AT=TOMORROW)
     def test_cannot_download_bots_code_before_tournament_ends(self):
         request = self.factory.get("")
         request.user = self.user
@@ -100,9 +97,7 @@ class DownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
             views.download_bots_code(request)
 
 
-@override_settings(
-    BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(timezone.utc) - timedelta(days=1)
-)
+@override_settings(BOTANY_TOURNAMENT_CLOSE_AT=YESTERDAY)
 class APIDownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
 
     def setUp(self):
@@ -125,10 +120,7 @@ class APIDownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
             "Return value of _download_bots_code"
         )
 
-    @override_settings(
-        BOTANY_TOURNAMENT_CLOSE_AT=datetime.now(
-            timezone.utc) + timedelta(days=1)
-    )
+    @override_settings(BOTANY_TOURNAMENT_CLOSE_AT=TOMORROW)
     def test_cannot_download_bots_code_via_api_before_tournament_ends(self):
         request = self.factory.get("")
         request.META["HTTP_AUTHORIZATION"] = "TOKEN"
