@@ -138,5 +138,5 @@ class APIDownloadBotsCodeViewTest(DownloadBotsCodeBaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.content.decode("utf-8"),
-            "Unable to download bots while tournament is still in progress"
+            "Unable to download bots until tournament is complete"
         )

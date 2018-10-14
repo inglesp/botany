@@ -362,9 +362,9 @@ def _download_bots_code():
 
 
 def download_bots_code(request):
-    if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
+    if get_tournament_state() != TOURNAMENT_STATE.CLOSED:
         raise Http404(
-            "Unable to download bots while tournament is still in progress"
+            "Unable to download bots until tournament is complete"
         )
 
     if not request.user.is_authenticated:
@@ -374,9 +374,9 @@ def download_bots_code(request):
 
 
 def api_download_bots_code(request):
-    if datetime.now(timezone.utc) < settings.BOTANY_TOURNAMENT_CLOSE_AT:
+    if get_tournament_state() != TOURNAMENT_STATE.CLOSED:
         return HttpResponseBadRequest(
-            "Unable to download bots while tournament is still in progress"
+            "Unable to download bots until tournament is complete"
         )
 
     # check that user exists with given token
