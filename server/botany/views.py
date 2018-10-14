@@ -343,8 +343,12 @@ def api_submit(request):
     if get_tournament_state() == TOURNAMENT_STATE.CLOSED:
         return HttpResponseBadRequest("Tournament has closed.")
 
+    api_token = request.META.get("HTTP_AUTHORIZATION", "")
+    if api_token == "":
+        return HttpResponseUnauthorized("API token not provided or empty")
+
     try:
-        user = User.objects.get(api_token=request.META["HTTP_AUTHORIZATION"])
+        user = User.objects.get(api_token=api_token)
     except User.DoesNotExist:
         return HttpResponseUnauthorized("Invalid API token")
 
@@ -390,8 +394,12 @@ def api_download_bots_code(request):
         )
 
     # check that user exists with given token
+    api_token = request.META.get("HTTP_AUTHORIZATION", "")
+    if api_token == "":
+        return HttpResponseUnauthorized("API token not provided or empty")
+
     try:
-        User.objects.get(api_token=request.META["HTTP_AUTHORIZATION"])
+        User.objects.get(api_token=api_token)
     except User.DoesNotExist:
         return HttpResponseUnauthorized("Invalid API token")
 
