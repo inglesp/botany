@@ -26,19 +26,20 @@ class APISubmitViewTest(TestCase):
 
     def test_request_with_valid_token_receives_200(self):
         data = {
-            "api_token": "TOKEN",
             "bot_name": "bot.py",
             "bot_code": factories.bot_code("randobot")
         }
 
         request = self.factory.post("", data=data)
+        request.META["HTTP_AUTHORIZATION"] = "TOKEN"
 
         response = views.api_submit(request)
 
         self.assertEqual(response.status_code, 200)
 
     def test_request_with_invalid_token_receives_401(self):
-        request = self.factory.post("", data={"api_token": "WRONG-TOKEN"})
+        request = self.factory.post("")
+        request.META["HTTP_AUTHORIZATION"] = "WRONG-TOKEN"
 
         response = views.api_submit(request)
 

@@ -344,7 +344,7 @@ def api_submit(request):
         return HttpResponseBadRequest("Tournament has closed.")
 
     try:
-        user = User.objects.get(api_token=request.POST["api_token"])
+        user = User.objects.get(api_token=request.META["HTTP_AUTHORIZATION"])
     except User.DoesNotExist:
         return HttpResponseUnauthorized("Invalid API token")
 
